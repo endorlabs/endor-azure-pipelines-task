@@ -1,0 +1,763 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Dependency agent-base@6.0.2 has a very low activity score of 3.12 (<3.50). agent-base@6.0.2 is a transitive dependency of endor-azure-pipelines-task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. agent-base@6.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffd857d073acc09b8622",
+            "finding-uuid": "6757ffd857d073acc09b8622",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Dependency agent-base@6.0.2 With Very Low Activity Score"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Dependency hasown@2.0.2 has a very low popularity score of 2.14 (<3.00). hasown@2.0.2 is a transitive dependency of endor-azure-pipelines-task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. hasown@2.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffd8958a98ee2962224f",
+            "finding-uuid": "6757ffd8958a98ee2962224f",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Dependency hasown@2.0.2 With Very Low Popularity Score"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Violation of organizational license policy.\ntruncate-utf8-bytes@1.0.2 is a transitive dependency of endor-azure-pipelines-task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. truncate-utf8-bytes@1.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3.\nLicense Name: WTFPL\nLicense SPDX id: WTFPL"
+          },
+          "properties": {
+            "categories": [
+              "LICENSE_RISK"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe0958a98ee29622257",
+            "finding-uuid": "6757ffe0958a98ee29622257",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY",
+              "POLICY"
+            ]
+          },
+          "ruleId": "License Compliance Violation"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "endor-azure-pipelines-task@1.0.0 directly depends on @types/q@1.5.8, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe50c2a9f8eb71cd66d",
+            "finding-uuid": "6757ffe50c2a9f8eb71cd66d",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "TEST"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency @types/q@1.5.8"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "endor-azure-pipelines-task@1.0.0 directly depends on @types/mocha@10.0.10, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe50c2a9f8eb71cd66c",
+            "finding-uuid": "6757ffe50c2a9f8eb71cd66c",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "TEST"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency @types/mocha@10.0.10"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "endor-azure-pipelines-task@1.0.0 directly depends on @types/node@22.10.1, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe557d073acc09b8629",
+            "finding-uuid": "6757ffe557d073acc09b8629",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "TEST"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency @types/node@22.10.1"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "endor-azure-pipelines-task@1.0.0 directly depends on azure-pipelines-task-lib@4.17.3, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe50c2a9f8eb71cd66b",
+            "finding-uuid": "6757ffe50c2a9f8eb71cd66b",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency azure-pipelines-task-lib@4.17.3"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Repository node-agent-base is archived for dependency agent-base@6.0.2.\nagent-base@6.0.2 is a transitive dependency of endor-azure-pipelines-task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. agent-base@6.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe5958a98ee29622258",
+            "finding-uuid": "6757ffe5958a98ee29622258",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Unmaintained Dependency agent-base@6.0.2"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "endor-azure-pipelines-task@1.0.0 directly depends on typescript@5.7.2, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6757ffe557d073acc09b8628",
+            "finding-uuid": "6757ffe557d073acc09b8628",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "TEST"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency typescript@5.7.2"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Dependency hasown@2.0.2 has a very low popularity score of 2.14 (<3.00). hasown@2.0.2 is a transitive dependency of task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. hasown@2.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6759571267fb9aad2ce3618a",
+            "finding-uuid": "6759571267fb9aad2ce3618a",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Dependency hasown@2.0.2 With Very Low Popularity Score"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Dependency agent-base@6.0.2 has a very low activity score of 3.12 (<3.50). agent-base@6.0.2 is a transitive dependency of task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. agent-base@6.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/675957122eae0cc94f865d62",
+            "finding-uuid": "675957122eae0cc94f865d62",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Dependency agent-base@6.0.2 With Very Low Activity Score"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "task@1.0.0 directly depends on azure-pipelines-task-lib@4.17.3, but the version is not pinned. This may introduce operational and security risk to the software package."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6759571367fb9aad2ce3618b",
+            "finding-uuid": "6759571367fb9aad2ce3618b",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "DIRECT",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Unpinned Direct Dependency azure-pipelines-task-lib@4.17.3"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Repository node-agent-base is archived for dependency agent-base@6.0.2.\nagent-base@6.0.2 is a transitive dependency of task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. agent-base@6.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3."
+          },
+          "properties": {
+            "categories": [
+              "OPERATIONAL"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/675957132eae0cc94f865d63",
+            "finding-uuid": "675957132eae0cc94f865d63",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY"
+            ]
+          },
+          "ruleId": "Unmaintained Dependency agent-base@6.0.2"
+        },
+        {
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "task/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Violation of organizational license policy.\ntruncate-utf8-bytes@1.0.2 is a transitive dependency of task@1.0.0 via external direct dependency azure-pipelines-task-lib@4.17.3. truncate-utf8-bytes@1.0.2 is a transitive dependency of azure-pipelines-task-lib@4.17.3.\nLicense Name: WTFPL\nLicense SPDX id: WTFPL"
+          },
+          "properties": {
+            "categories": [
+              "LICENSE_RISK"
+            ],
+            "cvss-score": 0,
+            "cvss-vector": "",
+            "epss-percentile-score": 0,
+            "epss-probability-score": 0,
+            "finding-url": "https://app.endorlabs.com/t/jenkins/findings/6759571467fb9aad2ce3618c",
+            "finding-uuid": "6759571467fb9aad2ce3618c",
+            "project-uuid": "6757ffc1958a98ee29622240",
+            "tags": [
+              "TRANSITIVE",
+              "NORMAL",
+              "POTENTIALLY_REACHABLE_DEPENDENCY",
+              "POLICY"
+            ]
+          },
+          "ruleId": "License Compliance Violation"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "endorctl",
+          "rules": [
+            {
+              "fullDescription": {
+                "text": "This package version has not pinned one of its direct dependencies. Dependencies that are not pinned to a specified version decrease the likelihood of build reproducibility and can be unexpectedly updated, which may introduce operational or security issues into your application. Unpinned dependencies expose organizations to the risk of software supply chain attacks where attackers compromise the upstream software dependency and publish a malicious version of the code."
+              },
+              "help": {
+                "text": "Pin @types/mocha (latest: 10.0.10) to version 10.0.8 (higher score and same major release number), 10.0.7 (higher score and same major release number), 10.0.6 (higher score and same major release number), or 10.0.5 (higher score and same major release number)."
+              },
+              "id": "Unpinned Direct Dependency @types/mocha@10.0.10",
+              "name": "Unpinned Direct Dependency @types/mocha@10.0.10",
+              "shortDescription": {
+                "text": "Unpinned Direct Dependency @types/mocha@10.0.10"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "This package version has not pinned one of its direct dependencies. Dependencies that are not pinned to a specified version decrease the likelihood of build reproducibility and can be unexpectedly updated, which may introduce operational or security issues into your application. Unpinned dependencies expose organizations to the risk of software supply chain attacks where attackers compromise the upstream software dependency and publish a malicious version of the code."
+              },
+              "help": {
+                "text": "Pin @types/node (latest: 22.10.1) to version 22.10.1 (current resolved version), 10.0.3 (higher score), 10.0.3 (higher score), or 10.0.2 (higher score)."
+              },
+              "id": "Unpinned Direct Dependency @types/node@22.10.1",
+              "name": "Unpinned Direct Dependency @types/node@22.10.1",
+              "shortDescription": {
+                "text": "Unpinned Direct Dependency @types/node@22.10.1"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "The source code repository for this package is archived."
+              },
+              "help": {
+                "text": "Assess the feasibility of migrating to a maintained software package or self-maintenance with the understanding that this software will no longer make updates available."
+              },
+              "id": "Unmaintained Dependency agent-base@6.0.2",
+              "name": "Unmaintained Dependency agent-base@6.0.2",
+              "shortDescription": {
+                "text": "Unmaintained Dependency agent-base@6.0.2"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "This package is very likely to be unmaintained, as determined by several factors contributing to a very low activity score. Reliance on packages that are no longer maintained can make it costly or unreasonable to fix significant security risks, or quality issues. This may render the dependency obsolete over time.\nBy relying on an unmaintained software package, organizations may assume the cost of maintenance and have a longer lead time for fixes on any security issues, if they are fixed at all."
+              },
+              "help": {
+                "text": "Check if the package is unmaintained by reviewing the score factors and decide whether to switch packages."
+              },
+              "id": "Dependency agent-base@6.0.2 With Very Low Activity Score",
+              "name": "Dependency agent-base@6.0.2 With Very Low Activity Score",
+              "shortDescription": {
+                "text": "Dependency agent-base@6.0.2 With Very Low Activity Score"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Popularity is a social proxy for quality. Popular packages are more likely to remain maintained and thoroughly tested. Relying on lesser known packages for critical functions may increase operational risk."
+              },
+              "help": {
+                "text": "No direct dependency upgrade(s) exist to fix this issue."
+              },
+              "id": "Dependency hasown@2.0.2 With Very Low Popularity Score",
+              "name": "Dependency hasown@2.0.2 With Very Low Popularity Score",
+              "shortDescription": {
+                "text": "Dependency hasown@2.0.2 With Very Low Popularity Score"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "One or more of the licenses associated with this package or package dependency violates organizational license policy."
+              },
+              "help": {
+                "text": "Please consult with legal for further instructions or to request an exception."
+              },
+              "id": "License Compliance Violation",
+              "name": "License Compliance Violation for Dependency truncate-utf8-bytes@1.0.2",
+              "shortDescription": {
+                "text": "License Compliance Violation for Dependency truncate-utf8-bytes@1.0.2"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "This package version has not pinned one of its direct dependencies. Dependencies that are not pinned to a specified version decrease the likelihood of build reproducibility and can be unexpectedly updated, which may introduce operational or security issues into your application. Unpinned dependencies expose organizations to the risk of software supply chain attacks where attackers compromise the upstream software dependency and publish a malicious version of the code."
+              },
+              "help": {
+                "text": "Pin @types/q (latest: 1.5.8) to version 1.0.7 (higher score and same major release number), 1.0.6 (higher score and same major release number), 1.0.5 (higher score and same major release number), or 1.0.3 (higher score and same major release number)."
+              },
+              "id": "Unpinned Direct Dependency @types/q@1.5.8",
+              "name": "Unpinned Direct Dependency @types/q@1.5.8",
+              "shortDescription": {
+                "text": "Unpinned Direct Dependency @types/q@1.5.8"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "This package version has not pinned one of its direct dependencies. Dependencies that are not pinned to a specified version decrease the likelihood of build reproducibility and can be unexpectedly updated, which may introduce operational or security issues into your application. Unpinned dependencies expose organizations to the risk of software supply chain attacks where attackers compromise the upstream software dependency and publish a malicious version of the code."
+              },
+              "help": {
+                "text": "Pin azure-pipelines-task-lib (latest: 5.0.1-preview.0) to version 4.17.3 (current resolved version)."
+              },
+              "id": "Unpinned Direct Dependency azure-pipelines-task-lib@4.17.3",
+              "name": "Unpinned Direct Dependency azure-pipelines-task-lib@4.17.3",
+              "shortDescription": {
+                "text": "Unpinned Direct Dependency azure-pipelines-task-lib@4.17.3"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "This package version has not pinned one of its direct dependencies. Dependencies that are not pinned to a specified version decrease the likelihood of build reproducibility and can be unexpectedly updated, which may introduce operational or security issues into your application. Unpinned dependencies expose organizations to the risk of software supply chain attacks where attackers compromise the upstream software dependency and publish a malicious version of the code."
+              },
+              "help": {
+                "text": "Pin typescript (latest: 5.8.0-dev.20241210) to version 5.8.0-dev.20241123 (higher score and same major release number), 5.3.2 (higher score and same major release number), 5.1.6 (higher score and same major release number), or 5.1.5 (higher score and same major release number)."
+              },
+              "id": "Unpinned Direct Dependency typescript@5.7.2",
+              "name": "Unpinned Direct Dependency typescript@5.7.2",
+              "shortDescription": {
+                "text": "Unpinned Direct Dependency typescript@5.7.2"
+              }
+            }
+          ],
+          "semanticVersion": "v1.6.716"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}
