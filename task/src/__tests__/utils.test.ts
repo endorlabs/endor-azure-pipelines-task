@@ -1,10 +1,10 @@
 import { getPlatformInfo, getEndorctlChecksum } from "../utils";
-import { expect, test } from "@jest/globals";
+import { expect, test, describe } from "@jest/globals";
 import * as tl from "azure-pipelines-task-lib/task";
 import type { ClientChecksumsType } from "../types";
 
 describe("getPlatformInfo", () => {
-  it("should return the correct platform info for Windows x64", () => {
+  test("should return the correct platform info for Windows x64", () => {
     const arch = "x64";
     const expectedPlatform = {
       os: "windows",
@@ -15,7 +15,7 @@ describe("getPlatformInfo", () => {
     expect(result).toEqual(expectedPlatform);
   });
 
-  it("should return the correct platform info for Windows arm64", () => {
+  test("should return the correct platform info for Windows arm64", () => {
     const arch = "arm64";
     const expectedPlatform = {
       os: "windows",
@@ -26,7 +26,7 @@ describe("getPlatformInfo", () => {
     expect(result).toEqual(expectedPlatform);
   });
 
-  it("should return the correct platform info for Linux x64", () => {
+  test("should return the correct platform info for Linux x64", () => {
     const arch = "x64";
     const expectedPlatform = {
       os: "linux",
@@ -37,7 +37,7 @@ describe("getPlatformInfo", () => {
     expect(result).toEqual(expectedPlatform);
   });
 
-  it("should return the correct platform info for MacOS x64", () => {
+  test("should return the correct platform info for MacOS x64", () => {
     const arch = "x64";
     const expectedPlatform = {
       os: "macos",
@@ -48,7 +48,7 @@ describe("getPlatformInfo", () => {
     expect(result).toEqual(expectedPlatform);
   });
 
-  it("should return the correct platform info for MacOS arm64", () => {
+  test("should return the correct platform info for MacOS arm64", () => {
     const arch = "arm64";
     const expectedPlatform = {
       os: "macos",
@@ -63,7 +63,7 @@ describe("getPlatformInfo", () => {
 describe("getEndorctlChecksum", () => {
   const fakeChecksums = new Proxy<ClientChecksumsType>(
     {} as ClientChecksumsType,
-    { get: (_, property) => property },
+    { get: (_, property) => property }
   );
 
   test.each<[os: string, arch: string, expected: string]>([
