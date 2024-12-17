@@ -1,7 +1,7 @@
 import { InputParameters } from "./input-parameters";
 
 export function buildEndorctlRunOptions(
-  inputParams: InputParameters
+  inputParams: InputParameters,
 ): string[] {
   const options = [
     `scan`,

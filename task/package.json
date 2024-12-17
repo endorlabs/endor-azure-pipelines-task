@@ -3,13 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "format:fix": "prettier --write '**/*.{js,json,ts}'",
+    "test": "jest --reporters=default --verbose",
+    "test:ci": "jest --ci --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.17.3"
+    "@types/node": "^22.10.2",
+    "azure-pipelines-task-lib": "^4.17.3",
+    "fs": "^0.0.1-security"
   }
 }

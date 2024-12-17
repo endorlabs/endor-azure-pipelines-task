@@ -77,16 +77,16 @@ class InputParameters {
   constructor() {}
 
   // validating input parameters provided by user.
-  public validate() {
+  public validate(): Error | undefined {
     if (!this.namespace) {
       const errorMsg =
         "namespace is required and must be passed as an input value";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
 
     if (!(this.apiKey && this.apiSecret)) {
       const errorMsg = "apiKey and apiSecret are required field.";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
 
     if (
@@ -99,59 +99,61 @@ class InputParameters {
     ) {
       const errorMsg =
         "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer` or `scanPackage` must be enabled";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
 
     if (this.scanContainer && this.scanDependencies) {
       const errorMsg =
         "Container scan and dependency scan cannot be set at the same time";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
 
     if (this.scanPackage) {
       if (this.scanContainer) {
         const errorMsg =
           "Package scan and Container scan cannot be set at the same time";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
       if (this.scanDependencies) {
         const errorMsg =
           "Package scan and Dependency scan cannot be set at the same time";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
       if (this.scanSecrets) {
         const errorMsg =
           "Package scan and Secrets scan cannot be set at the same time";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
       if (this.scanSast) {
         const errorMsg =
           "Package scan and SAST scan cannot be set at the same time";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
       if (!this.projectName) {
         const errorMsg =
           "Please provide project name via projectName parameter";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
       if (!this.scanPath) {
         const errorMsg =
           "Please provide path to the package to scan via scan_path parameter";
-        throw new Error(errorMsg);
+        return new Error(errorMsg);
       }
     }
 
     if (this.scanGitLogs && !this.scanSecrets) {
       const errorMsg =
         "Please also enable `scan_secrets` to scan Git logs for secrets";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
 
     if (this.scanContainer && !this.image) {
       const errorMsg =
         "image is required to scan container and must be passed as an input from the workflow via an image parameter";
-      throw new Error(errorMsg);
+      return new Error(errorMsg);
     }
+
+    return undefined;
   }
 }
 

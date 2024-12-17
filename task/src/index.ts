@@ -51,7 +51,7 @@ async function run() {
 function getAuthToken() {
   const serviceConnectionEndpoint = tl.getInput(
     "serviceConnectionEndpoint",
-    false
+    false,
   );
 
   if (!serviceConnectionEndpoint) {
@@ -60,11 +60,11 @@ function getAuthToken() {
     if (serviceConnectionEndpoint) {
       const endpointAuthorization = tl.getEndpointAuthorization(
         serviceConnectionEndpoint,
-        false
+        false,
       );
       if (endpointAuthorization) {
-        const apiKey = endpointAuthorization.parameters["apiKey"];
-        const apiSecret = endpointAuthorization.parameters["apiSecret"];
+        const apiKey = endpointAuthorization.parameters["username"];
+        const apiSecret = endpointAuthorization.parameters["password"];
 
         return { apiKey: apiKey, apiSecret: apiSecret } as AuthInfo;
       }

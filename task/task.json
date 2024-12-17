@@ -10,14 +10,14 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 25
+    "Patch": 32
   },
   "instanceNameFormat": "EndorLabs Security Scan",
   "inputs": [
     {
       "name": "serviceConnectionEndpoint",
       "type": "connectedService:endorlabsAuth",
-      "label": "Endorlabs service end point",
+      "label": "Endorlabs service connection end point",
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "Choose Endor Labs service connection from your Azure DevOps project settings."
@@ -36,8 +36,7 @@
       "type": "string",
       "required": false,
       "defaultValue": "",
-      "helpMarkDown": "Additional command-line args for endorctl CLI",
-      "groupName": "advanced"
+      "helpMarkDown": "Additional command-line args for endorctl CLI"
     }
   ],
   "execution": {

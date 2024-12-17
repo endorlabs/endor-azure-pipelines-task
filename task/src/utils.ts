@@ -5,18 +5,17 @@ import * as path from "path";
 import { execSync } from "child_process";
 import * as tl from "azure-pipelines-task-lib/task";
 
-import {
-  ClientChecksumsType,
-  PlatformInfo,
-  SetupProps,
-  VersionResponse,
-} from "./types";
+import { ClientChecksumsType, SetupProps, VersionResponse } from "./types";
+import { arch } from "os";
 
 export type Executable = {
   filename: string;
   downloadUrl: string;
 };
 
+/**
+ * Create a hash from a file
+ */
 export const createHashFromFile = (filePath: string) =>
   new Promise((resolve) => {
     const hash = crypto.createHash("sha256");
@@ -27,7 +26,7 @@ export const createHashFromFile = (filePath: string) =>
 
 export const commandExists = (command: string) => {
   try {
-    const platform = getPlatformInfo();
+    const platform = getPlatformInfo(tl.getPlatform(), arch());
     const cmd =
       platform.os === "windows" ? `where ${command}` : `which ${command}`;
 
@@ -40,27 +39,25 @@ export const commandExists = (command: string) => {
 
 /**
  * Returns the OS and Architecture to be used for downloading endorctl binary,
- * based on the current runner OS and Architecture. Returns the error if runner
+ * based on the current host OS and Architecture. Returns the error if host
  * OS/Arch combination is not supported
  */
-export const getPlatformInfo = () => {
-  const platform: tl.Platform = tl.getPlatform();
-
+export const getPlatformInfo = (
+  platform: tl.Platform,
+  architecture: string
+) => {
   const osSuffixes: Record<tl.Platform, string> = {
     [tl.Platform.Linux]: "linux",
     [tl.Platform.Windows]: "windows",
     [tl.Platform.MacOS]: "macos",
   };
 
-  const defaultInfo: PlatformInfo = {
-    os: undefined,
-    arch: "amd64",
-    error: undefined,
-  };
-
   return {
-    ...defaultInfo,
     os: osSuffixes[platform],
+    arch:
+      osSuffixes[platform] === "macos" && architecture.startsWith("arm")
+        ? "arm64"
+        : "amd64",
   };
 };
 
@@ -133,17 +130,16 @@ export const fetchLatestEndorctlVersion = async (api: string | undefined) => {
   return data;
 };
 
+/**
+ * Downloads the endorctl binary and returns the path to the downloaded binary
+ */
 export const setupEndorctl = async ({
   version,
   checksum,
   api,
 }: SetupProps): Promise<string> => {
   try {
-    const platform = getPlatformInfo();
-    if (platform.error) {
-      throw new Error(platform.error);
-    }
-
+    const platform = getPlatformInfo(tl.getPlatform(), arch());
     const isWindows = platform.os === "windows";
 
     let endorctlVersion = version;
@@ -196,6 +192,9 @@ export const setupEndorctl = async ({
   return "";
 };
 
+/**
+ * Downloads the executable from the given URL to the target directory
+ */
 export async function downloadExecutable(
   targetDirectory: string,
   executable: Executable,
@@ -294,6 +293,9 @@ export async function downloadExecutable(
   }
 }
 
+/**
+ * Make an HTTPS request and return the response body
+ */
 async function makeHttpsCall(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
     https

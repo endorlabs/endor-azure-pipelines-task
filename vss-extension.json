@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "endorlabs-security-scan-task",
   "name": "EndorLabs Security Scan Task",
-  "version": "0.0.25",
+  "version": "0.0.32",
   "publisher": "cp-endor",
   "targets": [
     {
@@ -41,16 +41,16 @@
       "targets": ["ms.vss-endpoint.endpoint-types"],
       "properties": {
         "name": "endorlabsAuth",
-        "displayName": "Endorlabs server connection",
+        "displayName": "Endorlabs api service connection",
         "url": "https://api.staging.endorlabs.com",
         "authenticationSchemes": [
           {
-            "type": "ms.vss-endpoint.endpoint-auth-scheme-token",
+            "type": "ms.vss-endpoint.endpoint-auth-scheme-basic",
             "inputDescriptors": [
               {
-                "id": "apiKey",
-                "name": "Key",
-                "description": "Key",
+                "id": "username",
+                "name": "API Key",
+                "description": "Endor Labs API credentials key",
                 "inputMode": "textbox",
                 "validation": {
                   "isRequired": true,
@@ -58,9 +58,9 @@
                 }
               },
               {
-                "id": "apiSecret",
-                "name": "Secret",
-                "description": "Secret",
+                "id": "password",
+                "name": "API Secret",
+                "description": "Endor Labs API credentials secret",
                 "inputMode": "passwordbox",
                 "isConfidential": true,
                 "validation": {
