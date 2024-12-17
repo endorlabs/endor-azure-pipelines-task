@@ -1,0 +1,78 @@
+{
+  "manifestVersion": 1,
+  "id": "endorlabs-security-scan-task",
+  "name": "EndorLabs Security Scan Task",
+  "version": "0.0.32",
+  "publisher": "cp-endor",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "description": "Azure Pipelines Task for Endor Labs.",
+  "categories": ["Azure Pipelines"],
+  "icons": {
+    "default": "images/endor-mascot-icon.png"
+  },
+  "scopes": ["vso.build_execute", "vso.code"],
+  "files": [
+    {
+      "path": "task"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "marketplace.md"
+    }
+  },
+  "contributions": [
+    {
+      "id": "custom-build-release-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "task"
+      }
+    },
+    {
+      "id": "endorlabs-service-endpoint",
+      "description": "Service endpoint type for endorlabs api connections",
+      "type": "ms.vss-endpoint.service-endpoint-type",
+      "targets": ["ms.vss-endpoint.endpoint-types"],
+      "properties": {
+        "name": "endorlabsAuth",
+        "displayName": "Endorlabs api service connection",
+        "url": "https://api.staging.endorlabs.com",
+        "authenticationSchemes": [
+          {
+            "type": "ms.vss-endpoint.endpoint-auth-scheme-basic",
+            "inputDescriptors": [
+              {
+                "id": "username",
+                "name": "API Key",
+                "description": "Endor Labs API credentials key",
+                "inputMode": "textbox",
+                "validation": {
+                  "isRequired": true,
+                  "dataType": "string"
+                }
+              },
+              {
+                "id": "password",
+                "name": "API Secret",
+                "description": "Endor Labs API credentials secret",
+                "inputMode": "passwordbox",
+                "isConfidential": true,
+                "validation": {
+                  "isRequired": true,
+                  "dataType": "string"
+                }
+              }
+            ]
+          }
+        ],
+        "helpMarkDown": "<a href=\"url-to-documentation\" target=\"_blank\"><b>Learn More</b></a>"
+      }
+    }
+  ]
+}

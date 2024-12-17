@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "56f4d7c4-055c-45cf-9383-7410f4d83d5a",
+  "name": "EndorLabsScan",
+  "friendlyName": "Endor Labs Scan",
+  "description": "Azure Pipelines Task for Endor Labs",
+  "helpMarkDown": "",
+  "category": "Utility",
+  "author": "cp-endor",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 32
+  },
+  "instanceNameFormat": "EndorLabs Security Scan",
+  "inputs": [
+    {
+      "name": "serviceConnectionEndpoint",
+      "type": "connectedService:endorlabsAuth",
+      "label": "Endorlabs service connection end point",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Choose Endor Labs service connection from your Azure DevOps project settings."
+    },
+    {
+      "name": "namespace",
+      "type": "string",
+      "label": "Namespace name in Endor",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Set to the namespace of the project that you are working with."
+    },
+    {
+      "name": "additionalArguments",
+      "label": "Additional command-line args for endorctl CLI",
+      "type": "string",
+      "required": false,
+      "defaultValue": "",
+      "helpMarkDown": "Additional command-line args for endorctl CLI"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "./dist/index.js"
+    }
+  }
+}

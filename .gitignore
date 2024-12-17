@@ -1,0 +1,4 @@
+node_modules
+task/node_modules
+.vscode/launch.json
+*.vsix
