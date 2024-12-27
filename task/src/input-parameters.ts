@@ -136,7 +136,7 @@ class InputParameters {
       }
       if (!this.scanPath) {
         const errorMsg =
-          "Please provide path to the package to scan via scan_path parameter";
+          "Please provide path to the package to scan via scanPath parameter";
         return new Error(errorMsg);
       }
     }
@@ -210,7 +210,7 @@ export function parseInputParams(): InputParameters {
     taskArgs.sarifFile = sarifFile;
   }
 
-  const additionalArguments = tl.getInput("additionalArguments", false);
+  const additionalArguments = tl.getInput("additionalArgs", false);
   if (additionalArguments) {
     taskArgs.additionalParameters = additionalArguments;
   }
