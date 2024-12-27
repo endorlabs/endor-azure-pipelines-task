@@ -122,7 +122,7 @@ class InputParameters {
                 return new Error(errorMsg);
             }
             if (!this.scanPath) {
-                const errorMsg = "Please provide path to the package to scan via scan_path parameter";
+                const errorMsg = "Please provide path to the package to scan via scanPath parameter";
                 return new Error(errorMsg);
             }
         }

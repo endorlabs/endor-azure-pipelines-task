@@ -78,7 +78,7 @@ describe("validateInputParameters", () => {
     const err9 = inputParams.validate();
     expect(err9).toBeInstanceOf(Error);
     expect(err9?.message).toBe(
-      "Please provide path to the package to scan via scan_path parameter"
+      "Please provide path to the package to scan via scanPath parameter"
     );
 
     inputParams.scanPath = "test-path";
@@ -87,7 +87,7 @@ describe("validateInputParameters", () => {
     const err10 = inputParams.validate();
     expect(err10).toBeInstanceOf(Error);
     expect(err10?.message).toBe(
-      "Please also enable `scan_secrets` to scan Git logs for secrets"
+      "Please also enable `scanSecrets` to scan Git logs for secrets"
     );
 
     inputParams.scanSecrets = true;
