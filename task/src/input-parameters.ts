@@ -62,7 +62,7 @@ class InputParameters {
   scanSecrets: boolean = false;
 
   // "Perform a more complete and detailed scan of secrets in the repository history.
-  // Must be used together with `scan_secrets`."
+  // Must be used together with `scanSecrets`."
   scanGitLogs: boolean = false;
 
   // "Scan source code repository and generate findings for SAST."
@@ -136,14 +136,14 @@ class InputParameters {
       }
       if (!this.scanPath) {
         const errorMsg =
-          "Please provide path to the package to scan via scan_path parameter";
+          "Please provide path to the package to scan via scanPath parameter";
         return new Error(errorMsg);
       }
     }
 
     if (this.scanGitLogs && !this.scanSecrets) {
       const errorMsg =
-        "Please also enable `scan_secrets` to scan Git logs for secrets";
+        "Please also enable `scanSecrets` to scan Git logs for secrets";
       return new Error(errorMsg);
     }
 
@@ -210,7 +210,7 @@ export function parseInputParams(): InputParameters {
     taskArgs.sarifFile = sarifFile;
   }
 
-  const additionalArguments = tl.getInput("additionalArguments", false);
+  const additionalArguments = tl.getInput("additionalArgs", false);
   if (additionalArguments) {
     taskArgs.additionalParameters = additionalArguments;
   }
