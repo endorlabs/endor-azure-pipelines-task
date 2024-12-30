@@ -3,9 +3,14 @@
 ##  Version to be published.
 TASK_VERSION=$1
 
+## Task Id of the extension.
 TASK_ID=$2
 
+## Azure DevOps PAT Token to publish the extension.
 AZURE_PAT=$3
+
+## Publisher of the extension.
+PUBLISHER=$4
 
 ### Tool setup
 $(pwd)/scripts/tool-setup.sh
@@ -27,4 +32,5 @@ tfx extension publish --manifest-globs vss-extension.json \
 --extension-id $TASK_ID \
 --version $TASK_VERSION \
 --override $MANIFEST_OVERRIDE_CONTENT \
---token $AZURE_PAT
+--token $AZURE_PAT \
+--publisher $PUBLISHER \
