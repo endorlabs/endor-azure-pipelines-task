@@ -10,6 +10,10 @@ on:
         default: ""
         type: string
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   publish-extension-dev:
     runs-on: ubuntu-latest
@@ -21,5 +25,5 @@ jobs:
       - name: Run publish-extension.sh script
         id: publish-extension
         run: |
-          chmod +x ./scripts/publish-extension.sh
+          chmod +x scripts/*.sh
           ./scripts/publish-extension.sh ${{ github.event.inputs.release-version }} ${{ env.EXT_ID }} ${{ secrets.AZ_EXT_PUBLISH_PAT_DEV }} ${{ env.AZ_PUBLISHER_DEV }}
