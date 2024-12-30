@@ -1,0 +1,21 @@
+name: Publish Extension (Dev)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-version:
+        description: |
+          "Specify release version eg. '0.0.1'"
+        required: true
+        default: ""
+        type: string
+
+jobs:
+  publish-extension-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run publish-extension.sh script
+        id: publish-extension
+        run: |
+          ./script/publish-extension.sh ${{ github.event.inputs.release-version }} ${{ env.EXT_ID }} ${{ secrets.AZ_EXT_PUBLISH_PAT_DEV }} ${{ env.AZ_PUBLISHER_DEV }}
