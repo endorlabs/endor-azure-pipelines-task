@@ -21,4 +21,5 @@ jobs:
       - name: Run publish-extension.sh script
         id: publish-extension
         run: |
+          chmod +x ./scripts/publish-extension.sh
           ./scripts/publish-extension.sh ${{ github.event.inputs.release-version }} ${{ env.EXT_ID }} ${{ secrets.AZ_EXT_PUBLISH_PAT_DEV }} ${{ env.AZ_PUBLISHER_DEV }}
