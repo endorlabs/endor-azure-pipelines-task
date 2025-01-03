@@ -277,7 +277,37 @@ export function parseInputParams(): InputParameters {
     taskArgs.phantomDependencies = phantomDependencies;
   }
 
+  if (taskArgs.logLevel == "debug") {
+    logInputParameters(taskArgs);
+  }
+
   return taskArgs;
+}
+
+function logInputParameters(params: InputParameters) {
+  console.log("Endor API is set to:", params.endorAPI);
+  console.log("API Key:", params.apiKey?.length);
+  console.log("API Secret:", params.apiSecret?.length);
+  console.log("Endorctl Version:", params.endorctlVersion);
+  console.log("Endorctl Checksum:", params.endorctlChecksum);
+  console.log("Namespace is:", params.namespace);
+  console.log("Log Level is:", params.logLevel);
+  console.log("Log Verbose is:", params.logVerbose);
+  console.log("Output File is:", params.outputFile);
+  console.log("SARIF File is:", params.sarifFile);
+  console.log("Additional Parameters are:", params.additionalParameters);
+  console.log("Scan Dependencies is:", params.scanDependencies);
+  console.log("Scan Container is:", params.scanContainer);
+  console.log("Image is:", params.image);
+  console.log("Project Name is:", params.projectName);
+  console.log("Scan Package is:", params.scanPackage);
+  console.log("Scan Path is:", params.scanPath);
+  console.log("Scan Tools is:", params.scanTools);
+  console.log("Scan Secrets is:", params.scanSecrets);
+  console.log("Scan Git Logs is:", params.scanGitLogs);
+  console.log("Scan SAST is:", params.scanSast);
+  console.log("Tags are:", params.tags);
+  console.log("Phantom Dependencies is:", params.phantomDependencies);
 }
 
 export { InputParameters };

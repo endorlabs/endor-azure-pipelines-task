@@ -7,28 +7,37 @@ import * as os from "os";
 
 async function run() {
   try {
-    console.log(`Current working path: ${process.cwd()}`);
-    console.log(`Host machine arch ${os.arch()}`);
+    console.log(
+      `Setting up endorctl scan at path: ${process.cwd()} for ${os.arch()} host architecture`
+    );
 
     const taskArgs: InputParameters = parseInputParams();
-    const endorToken: AuthInfo = getAuthToken();
-    if (!endorToken) {
+    const endorToken: AuthInfo = getAuthFromServiceConnection();
+    if (!endorToken && (!taskArgs.apiKey || !taskArgs.apiSecret)) {
       const errorMsg =
-        "auth info is not set. Setup apiKey and apiSecret in service connection and specify serviceConnectionEndpoint input parameter.";
+        "endorctl auth info is not set. Setup apiKey and apiSecret in service connection and specify serviceConnectionEndpoint input parameter.";
       throw new Error(errorMsg);
     }
 
+    const isDebugEnabled = taskArgs.logLevel === "debug";
+
     if (!taskArgs.apiKey) {
+      if (isDebugEnabled) {
+        console.log("Setting apiKey from service connection");
+      }
       taskArgs.apiKey = endorToken.apiKey;
     }
 
     if (!taskArgs.apiSecret) {
+      if (isDebugEnabled) {
+        console.log("Setting apiSecret from service connection");
+      }
       taskArgs.apiSecret = endorToken.apiSecret;
     }
 
     taskArgs.validate();
 
-    console.log("Namespace is:", taskArgs.namespace);
+    console.log("Namespace is set to:", taskArgs.namespace);
 
     const endorctlPath = await setupEndorctl({
       version: taskArgs.endorctlVersion,
@@ -41,17 +50,17 @@ async function run() {
     let toolRunner = tl.tool(endorctlPath).arg(endorctlParams);
     const exitCode = await toolRunner.execAsync();
     if (exitCode != 0) {
-      console.log("Failed to scan endorctl");
+      console.log("Endorctl scan failed with exit code:", exitCode);
     }
   } catch (err: any) {
     tl.setResult(tl.TaskResult.Failed, err.message);
   }
 }
 
-function getAuthToken() {
+function getAuthFromServiceConnection() {
   const serviceConnectionEndpoint = tl.getInput(
     "serviceConnectionEndpoint",
-    false,
+    false
   );
 
   if (!serviceConnectionEndpoint) {
@@ -60,7 +69,7 @@ function getAuthToken() {
     if (serviceConnectionEndpoint) {
       const endpointAuthorization = tl.getEndpointAuthorization(
         serviceConnectionEndpoint,
-        false,
+        false
       );
       if (endpointAuthorization) {
         const apiKey = endpointAuthorization.parameters["username"];
