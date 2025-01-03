@@ -2,13 +2,12 @@ import * as https from "https";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
-import { execSync } from "child_process";
 import * as tl from "azure-pipelines-task-lib/task";
 
 import { ClientChecksumsType, SetupProps, VersionResponse } from "./types";
 import { arch } from "os";
 
-export type Executable = {
+export type BinaryFileInfo = {
   filename: string;
   downloadUrl: string;
 };
@@ -23,19 +22,6 @@ export const createHashFromFile = (filePath: string) =>
       .on("data", (data) => hash.update(data))
       .on("end", () => resolve(hash.digest("hex")));
   });
-
-export const commandExists = (command: string) => {
-  try {
-    const platform = getPlatformInfo(tl.getPlatform(), arch());
-    const cmd =
-      platform.os === "windows" ? `where ${command}` : `which ${command}`;
-
-    execSync(cmd, { stdio: "ignore" });
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
 
 /**
  * Returns the OS and Architecture to be used for downloading endorctl binary,
@@ -142,6 +128,8 @@ export const setupEndorctl = async ({
     const platform = getPlatformInfo(tl.getPlatform(), arch());
     const isWindows = platform.os === "windows";
 
+    console.info(`Host Platform: ${platform.os} ${platform.arch}`);
+
     let endorctlVersion = version;
     let endorctlChecksum = checksum;
     if (!version) {
@@ -165,10 +153,10 @@ export const setupEndorctl = async ({
     let endorctlDir: string | undefined;
     endorctlDir = tl.getVariable("Agent.TempDirectory");
     if (!endorctlDir) {
-      throw new Error("Agent.TempDirectory is not set"); // set by Azure Pipelines environment
+      throw new Error("Agent.TempDirectory is not set"); // this is set by Azure Pipelines environment
     }
 
-    await downloadExecutable(endorctlDir, {
+    await downloadBinary(endorctlDir, {
       filename: binaryName,
       downloadUrl: url,
     });
@@ -176,7 +164,7 @@ export const setupEndorctl = async ({
     const hash = await createHashFromFile(path.join(endorctlDir, binaryName));
     if (hash !== endorctlChecksum) {
       throw new Error(
-        "The checksum of the downloaded binary does not match the expected value!"
+        "The checksum of the endorctl downloaded binary does not match the expected value!"
       );
     } else {
       console.info(`Binary checksum: ${endorctlChecksum}`);
@@ -185,8 +173,8 @@ export const setupEndorctl = async ({
     console.info(`Endorctl downloaded at ${endorctlDir}`);
     return `${endorctlDir}${path.sep}endorctl${isWindows ? ".exe" : ""}`;
   } catch (error: any) {
-    console.log("failed to download endorctl.");
-    console.log(error);
+    console.info("failed to download endorctl.");
+    console.info(error);
   }
 
   return "";
@@ -195,101 +183,77 @@ export const setupEndorctl = async ({
 /**
  * Downloads the executable from the given URL to the target directory
  */
-export async function downloadExecutable(
+export async function downloadBinary(
   targetDirectory: string,
-  executable: Executable,
-  maxRetries = 3
+  fileInfo: BinaryFileInfo
 ) {
-  const filePath = path.join(targetDirectory, executable.filename);
-  console.log(`Downloading executable to: ${filePath}`);
+  const filePath = path.join(targetDirectory, fileInfo.filename);
+  console.log(`Downloading endorctl binary to: ${filePath}`);
 
   // Check if the file already exists
   if (fs.existsSync(filePath)) {
     console.log(
-      `File ${executable.filename} already exists, skipping download.`
+      `endorctl binary ${fileInfo.filename} already exists, skipping download.`
     );
     return;
   }
 
-  const fileWriter = fs.createWriteStream(filePath, {
-    mode: 0o766,
-  });
-
-  // Wrapping the download in a function for easy retrying
-  const doDownload = (urlString: string, filename: string) =>
+  const downloadEndorctlFunc = (urlString: string, filename: string) =>
     new Promise<void>((resolve, reject) => {
+      const fileWriter = fs.createWriteStream(filePath, {
+        mode: 0o766,
+      });
       const url = new URL(urlString);
       const requestOpts: https.RequestOptions = {
         host: url.hostname,
         path: url.pathname,
-        timeout: 300000, // 5mins
+        timeout: 300000,
       };
-      https
-        .get(requestOpts, (response) => {
-          const isResponseError = response.statusCode !== 200;
 
-          response.on("finish", () => {
-            console.log(`Response finished for ${urlString}`);
-          });
-          response.on("close", () => {
-            console.log(`Download connection closed for ${urlString}`);
-          });
-          response.on("error", (err) => {
-            console.error(`Download of ${filename} failed: ${err.message}`);
+      https
+        .get(requestOpts, (res) => {
+          res.on("error", (err) => {
+            console.error(`endorctl binary download failed: ${err.message}`);
             reject(err);
           });
 
-          if (response.statusCode !== 200) {
+          const respError = res.statusCode !== 200;
+          if (respError) {
             fileWriter.close();
           }
 
           fileWriter.on("close", () => {
-            console.log(`File.close ${filename} saved to ${filePath}`);
-            if (isResponseError) {
-              reject(new Error(`HTTP ${response.statusCode}`));
+            console.log(`${filename} saved to ${filePath}`);
+            if (respError) {
+              reject(new Error(`${res.statusCode}`));
             } else {
               resolve();
             }
           });
 
-          response.pipe(fileWriter);
+          res.pipe(fileWriter);
         })
         .on("timeout", () => {
           console.error(`Download of ${filename} timed out`);
           reject();
         })
         .on("error", (err) => {
-          console.error(`Request for ${filename} failed: ${err.message}`);
+          console.error(
+            `Download request for endorctl binary ${filename} failed: ${err.message}`
+          );
           reject(err);
         });
     });
 
-  // Try to download the file, retry up to `maxRetries` times if the attempt fails
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      console.log(
-        `Downloading: ${executable.filename} from: ${executable.downloadUrl}`
-      );
-      await doDownload(executable.downloadUrl, executable.filename);
-      console.log(`Download successful for ${executable.filename}`);
-      return;
-    } catch (err: any) {
-      console.error(
-        `Download of ${executable.filename} failed: ${err.message}`
-      );
-
-      // Don't wait before retrying the last attempt
-      if (attempt < maxRetries - 1) {
-        console.log(
-          `Retrying download of ${executable.filename} from ${executable.downloadUrl} after 5 seconds...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      } else {
-        console.error(
-          `All retries failed for ${executable.filename} from ${executable.downloadUrl}: ${err.message}`
-        );
-      }
-    }
+  try {
+    console.log(
+      `Downloading endorctl: ${fileInfo.filename} from url: ${fileInfo.downloadUrl}`
+    );
+    await downloadEndorctlFunc(fileInfo.downloadUrl, fileInfo.filename);
+    console.log(`Successfully downloaded ${fileInfo.filename} file.`);
+    return;
+  } catch (err: any) {
+    console.error(`Failed to download ${fileInfo.filename}: ${err.message}`);
   }
 }
 
