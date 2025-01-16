@@ -41,7 +41,8 @@ export const getPlatformInfo = (
   return {
     os: osSuffixes[platform],
     arch:
-      osSuffixes[platform] === "macos" && architecture.startsWith("arm")
+      (osSuffixes[platform] === "macos" || osSuffixes[platform] === "linux") &&
+      architecture.startsWith("arm")
         ? "arm64"
         : "amd64",
   };
