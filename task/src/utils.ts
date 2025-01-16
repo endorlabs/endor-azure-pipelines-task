@@ -60,6 +60,8 @@ export const getEndorctlChecksum = (
   switch (platformString) {
     case `linux_amd64`:
       return clientChecksums.ARCH_TYPE_LINUX_AMD64;
+    case `linux_arm64`:
+      return clientChecksums.ARCH_TYPE_LINUX_ARM64;
     case `macos_amd64`:
       return clientChecksums.ARCH_TYPE_MACOS_AMD64;
     case `macos_arm64`:
