@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "endorlabs-security-scan-task",
   "name": "EndorLabs Security Scan Task",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "publisher": "cp-endor",
   "targets": [
     {
@@ -41,8 +41,8 @@
       "targets": ["ms.vss-endpoint.endpoint-types"],
       "properties": {
         "name": "endorlabsAuth",
-        "displayName": "Endorlabs api service connection",
-        "url": "https://api.staging.endorlabs.com",
+        "displayName": "Endorlabs api",
+        "url": "https://api.endorlabs.com",
         "authenticationSchemes": [
           {
             "type": "ms.vss-endpoint.endpoint-auth-scheme-basic",
