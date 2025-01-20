@@ -70,6 +70,7 @@ The following input parameters are also supported for the Endor Labs Azure pipel
 | `scanDependencies` | Scan git commits and generate findings for all dependencies. (Default: `true`) |
 | `scanGitLogs` | Perform a more complete and detailed scan of secrets in the repository history. Must be used together with `scanSecrets`. (Default: `false`) |
 | `scanPath` | Set the path to the directory to scan. (Default: `.`) |
+| `scanSast` | Set to `true` to enable sast scan. (Default: `false`) |
 | `scanSecrets` | Scan source code repository and generate findings for secrets. See also `scanGitLogs`. (Default: `false`) |
 | `scanTools` | Scan source code repository for CI/CD tools. (Default: `false`) |
 | `tags` | Specify a list of user-defined tags to add to this scan. Tags can be used to search and filter scans later. |
