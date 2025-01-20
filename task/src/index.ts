@@ -35,7 +35,10 @@ async function run() {
       taskArgs.apiSecret = endorToken.apiSecret;
     }
 
-    taskArgs.validate();
+    const validationError = taskArgs.validate();
+    if (validationError !== undefined) {
+      throw new Error(validationError.message);
+    }
 
     console.log("Namespace is set to:", taskArgs.namespace);
 
