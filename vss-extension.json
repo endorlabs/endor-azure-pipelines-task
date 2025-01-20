@@ -41,7 +41,7 @@
       "targets": ["ms.vss-endpoint.endpoint-types"],
       "properties": {
         "name": "endorlabsAuth",
-        "displayName": "Endorlabs api",
+        "displayName": "EndorLabs",
         "url": "https://api.endorlabs.com",
         "authenticationSchemes": [
           {
