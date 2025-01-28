@@ -263,7 +263,7 @@ export function parseInputParams(): InputParameters {
   }
 
   const scanSast = tl.getBoolInput("scanSast", false);
-  if (scanGitLogs) {
+  if (scanSast) {
     taskArgs.scanSast = scanSast;
   }
 
