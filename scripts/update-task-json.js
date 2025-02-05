@@ -16,10 +16,17 @@ const newVersion = {
   Patch: metaVersion[2],
 };
 
+const prodGuid = process.argv[3];
+if (prodGuid) {
+  console.log('updating prodGuid');
+}
 console.log('taskVersion: ', newVersion);
 
 const filePath = './task/task.json';
 const taskJSON_File = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 taskJSON_File['version'] = newVersion;
+if (prodGuid) {
+  taskJSON_File['id'] = prodGuid;
+}
 fs.writeFileSync(filePath, JSON.stringify(taskJSON_File, null, 2), 'utf8');
 console.log('Version updated in task/task.json file, version: ', newVersion);

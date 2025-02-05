@@ -1,4 +1,4 @@
-name: Publish Extension (Dev)
+name: Publish Extension (Prod)
 
 on:
   workflow_dispatch:
@@ -20,8 +20,9 @@ jobs:
     env:
       Version: ${{ github.event.inputs.release-version }}
       ExtensionId: ${{ vars.EXT_ID }}
-      AzExtPublishPat: ${{ secrets.AZ_EXT_PUBLISH_PAT_DEV }}
-      Publisher: ${{ vars.AZ_PUBLISHER_DEV }}
+      AzExtPublishPat: ${{ secrets.AZ_EXT_PUBLISH_PAT_PROD }}
+      Publisher: ${{ vars.AZ_PUBLISHER_PROD }}
+      AppGuid: "c62b2217-14ac-41cc-883b-d47232837a03"
 
     steps:
       - name: Checkout
@@ -31,4 +32,4 @@ jobs:
         id: publish-extension
         run: |
           chmod +x scripts/*.sh
-          ./scripts/publish-extension.sh $Version $ExtensionId $AzExtPublishPat $Publisher
+          ./scripts/publish-extension.sh $Version $ExtensionId $AzExtPublishPat $Publisher $AppGuid
