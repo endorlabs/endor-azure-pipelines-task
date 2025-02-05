@@ -27,6 +27,7 @@ const taskJSON_File = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 taskJSON_File['version'] = newVersion;
 if (prodGuid) {
   taskJSON_File['id'] = prodGuid;
+  taskJSON_File['author'] = "EndorLabs";
 }
 fs.writeFileSync(filePath, JSON.stringify(taskJSON_File, null, 2), 'utf8');
 console.log('Version updated in task/task.json file, version: ', newVersion);

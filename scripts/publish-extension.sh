@@ -29,7 +29,7 @@ MANIFEST_OVERRIDE_CONTENT="{ \"id\": \"${TASK_ID}\",\"version\": \"${TASK_VERSIO
 
 if [ ! -z "$PROD_GUID" -a "$PROD_GUID" != " " ]; then
     echo "Updating manifest for production extension."
-    MANIFEST_OVERRIDE_CONTENT="{ \"id\": \"${TASK_ID}\",\"version\": \"${TASK_VERSION}\", \"public\": true }"
+    MANIFEST_OVERRIDE_CONTENT="{ \"id\": \"${TASK_ID}\",\"version\": \"${TASK_VERSION}\", \"public\": true, \"publisher\": "EndorLabs" }"
 fi
 
 ### Publish the extension
