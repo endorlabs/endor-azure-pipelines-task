@@ -31,7 +31,7 @@
       "helpMarkDown": "Set to the namespace of the project that you are working with."
     },
     {
-      "name": "additionalArguments",
+      "name": "additionalArgs",
       "label": "Additional command-line args for endorctl CLI",
       "type": "string",
       "required": false,
