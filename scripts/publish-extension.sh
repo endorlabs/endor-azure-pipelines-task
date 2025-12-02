@@ -37,7 +37,7 @@ echo "Publishing the extension to the marketplace with new version ${TASK_VERSIO
 
 tfx extension publish --manifest-globs vss-extension.json \
 --extension-id $TASK_ID \
---version $TASK_VERSION \
+--rev-version \
 --override $MANIFEST_OVERRIDE_CONTENT \
 --token $AZURE_PAT \
 --publisher $PUBLISHER \
