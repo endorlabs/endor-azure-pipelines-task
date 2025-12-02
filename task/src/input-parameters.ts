@@ -215,6 +215,17 @@ export function parseInputParams(): InputParameters {
     taskArgs.additionalParameters = additionalArguments;
   }
 
+  // Automatically append --detached-ref-name with the current branch/tag name
+  const sourceBranchName = tl.getVariable("Build.SourceBranchName");
+  if (sourceBranchName) {
+    const detachedRefNameArg = `--detached-ref-name=${sourceBranchName}`;
+    if (taskArgs.additionalParameters) {
+      taskArgs.additionalParameters = `${taskArgs.additionalParameters} ${detachedRefNameArg}`;
+    } else {
+      taskArgs.additionalParameters = detachedRefNameArg;
+    }
+  }
+
   // this needs to be parsed as string because the default value is "true" and
   // tl.getBoolInput will return false if the input is not set.
   const scanDependencies = tl.getInput("scanDependencies", false);
