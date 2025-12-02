@@ -67,5 +67,12 @@ export function buildEndorctlRunOptions(
     }
   }
 
+  if (!inputParams.additionalParameters?.includes("--detached-ref-name=")) {
+    const branch = process.env.BUILD_SOURCEBRANCHNAME?.trim();
+    if (branch) {
+      options.push(`--detached-ref-name=${branch}`);
+    }
+  }
+
   return options;
 }
