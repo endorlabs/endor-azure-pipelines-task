@@ -218,10 +218,7 @@ export function parseInputParams(): InputParameters {
     taskArgs.additionalParameters = additionalArguments;
   }
 
-  const enableDetachedRefName = tl.getBoolInput("enableDetachedRefName", true);
-  if (enableDetachedRefName) {
-    taskArgs.enableDetachedRefName = enableDetachedRefName;
-  }
+  taskArgs.enableDetachedRefName = tl.getBoolInput("enableDetachedRefName", true);
 
   const sourceBranchName = tl.getVariable("Build.SourceBranchName");
   if (taskArgs.enableDetachedRefName && sourceBranchName && (!taskArgs.additionalParameters || !taskArgs.additionalParameters.includes("--detached-ref-name"))) {
