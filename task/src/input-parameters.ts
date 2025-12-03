@@ -34,6 +34,9 @@ class InputParameters {
   // "Use this to add custom arguments to the endorctl command."
   additionalParameters: string | undefined = "";
 
+  // "Set to true to automatically add --detached-ref-name with source branch name."
+  enableDetachedRefName: boolean = true;
+
   /****  
     scan options 
   *****/
@@ -215,6 +218,19 @@ export function parseInputParams(): InputParameters {
     taskArgs.additionalParameters = additionalArguments;
   }
 
+  const enableDetachedRefName = tl.getBoolInput("enableDetachedRefName", true);
+  if (enableDetachedRefName) {
+    taskArgs.enableDetachedRefName = enableDetachedRefName;
+  }
+
+  const sourceBranchName = tl.getVariable("Build.SourceBranchName");
+  if (taskArgs.enableDetachedRefName && sourceBranchName && (!taskArgs.additionalParameters || !taskArgs.additionalParameters.includes("--detached-ref-name"))) {
+    const detachedRefNameArg = `--detached-ref-name=${sourceBranchName}`;
+    taskArgs.additionalParameters = taskArgs.additionalParameters
+      ? `${taskArgs.additionalParameters} ${detachedRefNameArg}`
+      : detachedRefNameArg;
+  }
+
   // this needs to be parsed as string because the default value is "true" and
   // tl.getBoolInput will return false if the input is not set.
   const scanDependencies = tl.getInput("scanDependencies", false);
@@ -296,6 +312,7 @@ function logInputParameters(params: InputParameters) {
   console.log("Output File is:", params.outputFile);
   console.log("SARIF File is:", params.sarifFile);
   console.log("Additional Parameters are:", params.additionalParameters);
+  console.log("Enable Detached Ref Name is:", params.enableDetachedRefName);
   console.log("Scan Dependencies is:", params.scanDependencies);
   console.log("Scan Container is:", params.scanContainer);
   console.log("Image is:", params.image);
