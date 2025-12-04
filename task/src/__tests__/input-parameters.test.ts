@@ -100,3 +100,56 @@ describe("validateInputParameters", () => {
     );
   });
 });
+
+describe("detached ref name logic", () => {
+  test("correctly appends --detached-ref-name when additionalParameters is empty", () => {
+    const inputParams = new InputParameters();
+    inputParams.enableDetachedRefName = true;
+    inputParams.additionalParameters = "";
+
+    const sourceBranchName = "main";
+    if (inputParams.enableDetachedRefName && sourceBranchName &&
+        (!inputParams.additionalParameters || !inputParams.additionalParameters.includes("--detached-ref-name"))) {
+      const detachedRefNameArg = `--detached-ref-name=${sourceBranchName}`;
+      inputParams.additionalParameters = inputParams.additionalParameters
+        ? `${inputParams.additionalParameters} ${detachedRefNameArg}`
+        : detachedRefNameArg;
+    }
+
+    expect(inputParams.additionalParameters).toBe("--detached-ref-name=main");
+  });
+
+  test("correctly appends --detached-ref-name when additionalParameters has existing content", () => {
+    const inputParams = new InputParameters();
+    inputParams.enableDetachedRefName = true;
+    inputParams.additionalParameters = "--verbose --debug";
+
+    const sourceBranchName = "feature-branch";
+    if (inputParams.enableDetachedRefName && sourceBranchName &&
+        (!inputParams.additionalParameters || !inputParams.additionalParameters.includes("--detached-ref-name"))) {
+      const detachedRefNameArg = `--detached-ref-name=${sourceBranchName}`;
+      inputParams.additionalParameters = inputParams.additionalParameters
+        ? `${inputParams.additionalParameters} ${detachedRefNameArg}`
+        : detachedRefNameArg;
+    }
+
+    expect(inputParams.additionalParameters).toBe("--verbose --debug --detached-ref-name=feature-branch");
+  });
+
+  test("does not add --detached-ref-name when enableDetachedRefName is false", () => {
+    const inputParams = new InputParameters();
+    inputParams.enableDetachedRefName = false;
+    inputParams.additionalParameters = "--verbose";
+
+    const sourceBranchName = "main";
+    if (inputParams.enableDetachedRefName && sourceBranchName &&
+        (!inputParams.additionalParameters || !inputParams.additionalParameters.includes("--detached-ref-name"))) {
+      const detachedRefNameArg = `--detached-ref-name=${sourceBranchName}`;
+      inputParams.additionalParameters = inputParams.additionalParameters
+        ? `${inputParams.additionalParameters} ${detachedRefNameArg}`
+        : detachedRefNameArg;
+    }
+
+    expect(inputParams.additionalParameters).toBe("--verbose");
+  });
+});

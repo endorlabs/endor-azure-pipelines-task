@@ -37,6 +37,14 @@
       "required": false,
       "defaultValue": "",
       "helpMarkDown": "Additional command-line args for endorctl CLI"
+    },
+    {
+      "name": "enableDetachedRefName",
+      "type": "boolean",
+      "label": "Enable detached-ref-name flag",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "Automatically add --detached-ref-name with source branch name to endorctl command. Default: true"
     }
   ],
   "execution": {
