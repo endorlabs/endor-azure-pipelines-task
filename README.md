@@ -57,6 +57,7 @@ The following input global parameters are supported for the Endor Labs Azure pip
 | `endorctlVersion` | Set to a version of endorctl to pin this specific version for use. Defaults to the latest version. |
 | `logLevel` | Set the log level. (Default: `info`) |
 | `logVerbose` | Set to `true` to enable verbose logging. (Default: `false`) |
+| `enableDetachedRefName` | Set to `true` to automatically add detached-ref-name and use the actual branch name instead of commit SHA. Set to `false` to disable this behavior and continue using commit SHA. (Default: `true`)|
 
 ### Scanning parameters
 
