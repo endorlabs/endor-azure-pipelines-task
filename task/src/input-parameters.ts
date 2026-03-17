@@ -102,10 +102,11 @@ class InputParameters {
       !this.scanSast &&
       !this.scanContainer &&
       !this.scanTools &&
-      !this.scanPackage
+      !this.scanPackage &&
+      !this.scanAISast
     ) {
       const errorMsg =
-        "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer` or `scanPackage` must be enabled";
+        "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer`, `scanAISast` or `scanPackage` must be enabled";
       return new Error(errorMsg);
     }
 
