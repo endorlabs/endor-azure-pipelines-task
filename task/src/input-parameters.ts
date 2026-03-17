@@ -40,6 +40,10 @@ class InputParameters {
   /****  
     scan options 
   *****/
+
+  // "Set to true to enable AI-assisted SAST scan."
+  scanAISast: boolean = false;
+
   //"Scan git commits and generate findings for all dependencies."
   scanDependencies: boolean = true;
 
@@ -228,6 +232,8 @@ export function parseInputParams(): InputParameters {
       : detachedRefNameArg;
   }
 
+  taskArgs.scanAISast = tl.getBoolInput("scanAISast", false);
+
   // this needs to be parsed as string because the default value is "true" and
   // tl.getBoolInput will return false if the input is not set.
   const scanDependencies = tl.getInput("scanDependencies", false);
@@ -310,6 +316,7 @@ function logInputParameters(params: InputParameters) {
   console.log("SARIF File is:", params.sarifFile);
   console.log("Additional Parameters are:", params.additionalParameters);
   console.log("Enable Detached Ref Name is:", params.enableDetachedRefName);
+  console.log("Scan AI SAST is:", params.scanAISast);
   console.log("Scan Dependencies is:", params.scanDependencies);
   console.log("Scan Container is:", params.scanContainer);
   console.log("Image is:", params.image);

@@ -30,6 +30,10 @@ export function buildEndorctlRunOptions(
     options.push(`--sast=true`);
   }
 
+  if (inputParams.scanAISast) {
+    options.push(`--ai-sast`);
+  }
+
   if (inputParams.scanContainer) {
     options.push(`--container=${inputParams.image}`);
     if (inputParams.projectName) {

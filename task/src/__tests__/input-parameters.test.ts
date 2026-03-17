@@ -153,3 +153,14 @@ describe("detached ref name logic", () => {
     expect(inputParams.additionalParameters).toBe("--verbose");
   });
 });
+
+describe("AI SAST input behavior", () => {
+  test("stores scanAISast without mutating additionalParameters", () => {
+    const inputParams = new InputParameters();
+    inputParams.scanAISast = true;
+    inputParams.additionalParameters = "--verbose --debug";
+
+    expect(inputParams.scanAISast).toBe(true);
+    expect(inputParams.additionalParameters).toBe("--verbose --debug");
+  });
+});
