@@ -22,7 +22,7 @@ describe("validateInputParameters", () => {
     const err2 = inputParams.validate();
     expect(err2).toBeInstanceOf(Error);
     expect(err2?.message).toBe(
-      "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer` or `scanPackage` must be enabled"
+      "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer`, `scanAISast` or `scanPackage` must be enabled"
     );
 
     inputParams.scanDependencies = true;
