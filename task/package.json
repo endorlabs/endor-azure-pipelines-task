@@ -14,8 +14,7 @@
   "description": "",
   "dependencies": {
     "@types/node": "^22.10.2",
-    "azure-pipelines-task-lib": "^4.17.3",
-    "fs": "^0.0.1-security"
+    "azure-pipelines-task-lib": "^4.17.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
