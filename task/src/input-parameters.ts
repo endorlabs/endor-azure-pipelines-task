@@ -245,6 +245,7 @@ export function parseInputParams(): InputParameters {
   const scanContainer = tl.getBoolInput("scanContainer", false);
   if (scanContainer) {
     taskArgs.scanContainer = scanContainer;
+    taskArgs.scanDependencies = false;
   }
 
   const image = tl.getInput("image", false);
