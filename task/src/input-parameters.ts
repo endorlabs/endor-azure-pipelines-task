@@ -52,6 +52,30 @@ class InputParameters {
   // "Specify a project name for a container image scan."
   projectName: string | undefined = undefined;
 
+  // "Enable OS reachability analysis for container scans."
+  osReachability: boolean = false;
+
+  // "Specify the Dockerfile path used to build the image being scanned."
+  dockerfilePath: string | undefined = undefined;
+
+  // "Specify the base image name of the image being scanned."
+  baseImageName: string | undefined = undefined;
+
+  // "Scan the base image if identified and not previously scanned."
+  baseImageScan: boolean = false;
+
+  // "Specify image type to skip auto-detection: 'app' or 'base'."
+  imageType: string | undefined = undefined;
+
+  // "Set output format for container scan (json|yaml|table|summary|table-verbose)."
+  outputType: string | undefined = undefined;
+
+  // "Specify a list of user-defined tags to add to findings generated for objects in this scan scope."
+  findingTags: string | undefined = undefined;
+
+  // "Specify a list of user-defined tags to add to this project."
+  projectTags: string | undefined = undefined;
+
   // "Scan a specified artifact or a package. The path to an artifact must be set with `scanPath`."
   scanPackage: boolean = false;
 
@@ -250,6 +274,46 @@ export function parseInputParams(): InputParameters {
     taskArgs.projectName = projectName;
   }
 
+  const osReachability = tl.getBoolInput("osReachability", false);
+  if (osReachability) {
+    taskArgs.osReachability = osReachability;
+  }
+
+  const dockerfilePath = tl.getInput("dockerfilePath", false);
+  if (dockerfilePath) {
+    taskArgs.dockerfilePath = dockerfilePath;
+  }
+
+  const baseImageName = tl.getInput("baseImageName", false);
+  if (baseImageName) {
+    taskArgs.baseImageName = baseImageName;
+  }
+
+  const baseImageScan = tl.getBoolInput("baseImageScan", false);
+  if (baseImageScan) {
+    taskArgs.baseImageScan = baseImageScan;
+  }
+
+  const imageType = tl.getInput("imageType", false);
+  if (imageType) {
+    taskArgs.imageType = imageType;
+  }
+
+  const outputType = tl.getInput("outputType", false);
+  if (outputType) {
+    taskArgs.outputType = outputType;
+  }
+
+  const findingTags = tl.getInput("findingTags", false);
+  if (findingTags) {
+    taskArgs.findingTags = findingTags;
+  }
+
+  const projectTags = tl.getInput("projectTags", false);
+  if (projectTags) {
+    taskArgs.projectTags = projectTags;
+  }
+
   const scanPackage = tl.getBoolInput("scanPackage", false);
   if (scanPackage) {
     taskArgs.scanPackage = scanPackage;
@@ -314,6 +378,14 @@ function logInputParameters(params: InputParameters) {
   console.log("Scan Container is:", params.scanContainer);
   console.log("Image is:", params.image);
   console.log("Project Name is:", params.projectName);
+  console.log("OS Reachability is:", params.osReachability);
+  console.log("Dockerfile Path is:", params.dockerfilePath);
+  console.log("Base Image Name is:", params.baseImageName);
+  console.log("Base Image Scan is:", params.baseImageScan);
+  console.log("Image Type is:", params.imageType);
+  console.log("Output Type is:", params.outputType);
+  console.log("Finding Tags are:", params.findingTags);
+  console.log("Project Tags are:", params.projectTags);
   console.log("Scan Package is:", params.scanPackage);
   console.log("Scan Path is:", params.scanPath);
   console.log("Scan Tools is:", params.scanTools);

@@ -45,6 +45,108 @@
       "defaultValue": "true",
       "required": false,
       "helpMarkDown": "Automatically add --detached-ref-name with source branch name to endorctl command. Default: true"
+    },
+    {
+      "name": "scanContainer",
+      "type": "boolean",
+      "label": "Scan a container image",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Enable container image scanning using 'endorctl container scan'. Cannot be used with scanDependencies."
+    },
+    {
+      "name": "image",
+      "type": "string",
+      "label": "Container image to scan",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the container image to scan (e.g., myregistry/myimage:tag). Required when scanContainer is true.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "osReachability",
+      "type": "boolean",
+      "label": "Enable OS reachability analysis",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Enable OS reachability analysis for the container scan.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "dockerfilePath",
+      "type": "string",
+      "label": "Dockerfile path",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the Dockerfile path used to build the image being scanned.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "baseImageName",
+      "type": "string",
+      "label": "Base image name",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify the base image name of the image being scanned.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "baseImageScan",
+      "type": "boolean",
+      "label": "Scan base image",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Scan the base image if identified and not previously scanned.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "imageType",
+      "type": "pickList",
+      "label": "Image type",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify image type to skip auto-detection.",
+      "options": {
+        "": "(auto-detect)",
+        "app": "app",
+        "base": "base"
+      },
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "outputType",
+      "type": "pickList",
+      "label": "Output type for container scan",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Set output format for container scan results.",
+      "options": {
+        "": "(default)",
+        "json": "json",
+        "yaml": "yaml",
+        "table": "table",
+        "summary": "summary",
+        "table-verbose": "table-verbose"
+      },
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "findingTags",
+      "type": "string",
+      "label": "Finding tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Comma-separated list of user-defined tags to add to findings generated for objects in this scan scope.",
+      "visibleRule": "scanContainer = true"
+    },
+    {
+      "name": "projectTags",
+      "type": "string",
+      "label": "Project tags",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Comma-separated list of user-defined tags to add to this project.",
+      "visibleRule": "scanContainer = true"
     }
   ],
   "execution": {
