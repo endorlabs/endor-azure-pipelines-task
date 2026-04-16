@@ -25,12 +25,16 @@ export function buildEndorctlRunOptions(
       options.push(`--sarif-file=${inputParams.sarifFile}`);
     }
 
-    if (inputParams.osReachability) {
-      options.push(`--os-reachability`);
+    if (inputParams.appScanContext) {
+      options.push(`--app-scan-context=${inputParams.appScanContext}`);
     }
 
-    if (inputParams.dockerfilePath) {
-      options.push(`--dockerfile-path=${inputParams.dockerfilePath}`);
+    if (inputParams.appScanProject) {
+      options.push(`--app-scan-project=${inputParams.appScanProject}`);
+    }
+
+    if (inputParams.asRef) {
+      options.push(`--as-ref`);
     }
 
     if (inputParams.baseImageName) {
@@ -41,24 +45,60 @@ export function buildEndorctlRunOptions(
       options.push(`--base-image-scan`);
     }
 
-    if (inputParams.imageType) {
-      options.push(`--image-type=${inputParams.imageType}`);
+    if (inputParams.baseImageScanProject) {
+      options.push(`--base-image-scan-project=${inputParams.baseImageScanProject}`);
     }
 
-    if (inputParams.outputType) {
-      options.push(`--output-type=${inputParams.outputType}`);
+    if (inputParams.dockerfilePath) {
+      options.push(`--dockerfile-path=${inputParams.dockerfilePath}`);
+    }
+
+    if (inputParams.entrypoint) {
+      options.push(`--entrypoint=${inputParams.entrypoint}`);
+    }
+
+    if (inputParams.env) {
+      options.push(`--env=${inputParams.env}`);
     }
 
     if (inputParams.findingTags) {
       options.push(`--finding-tags=${inputParams.findingTags}`);
     }
 
-    if (inputParams.projectTags) {
-      options.push(`--project-tags=${inputParams.projectTags}`);
+    if (inputParams.imageType) {
+      options.push(`--image-type=${inputParams.imageType}`);
+    }
+
+    if (inputParams.osReachability) {
+      options.push(`--os-reachability`);
+    }
+
+    if (inputParams.outputType) {
+      options.push(`--output-type=${inputParams.outputType}`);
+    }
+
+    if (inputParams.profilingDataDir) {
+      options.push(`--profiling-data-dir=${inputParams.profilingDataDir}`);
+    }
+
+    if (inputParams.profilingMaxSize !== undefined) {
+      options.push(`--profiling-max-size=${inputParams.profilingMaxSize}`);
     }
 
     if (inputParams.projectName) {
       options.push(`--project-name=${inputParams.projectName}`);
+    }
+
+    if (inputParams.projectTags) {
+      options.push(`--project-tags=${inputParams.projectTags}`);
+    }
+
+    if (inputParams.publish) {
+      options.push(`--publish=${inputParams.publish}`);
+    }
+
+    if (inputParams.volume) {
+      options.push(`--volume=${inputParams.volume}`);
     }
   } else {
     options.push(`--sarif-file=${inputParams.sarifFile}`);

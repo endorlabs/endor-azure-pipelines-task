@@ -76,6 +76,36 @@ class InputParameters {
   // "Specify a list of user-defined tags to add to this project."
   projectTags: string | undefined = undefined;
 
+  // "Provide the context ID of the SCA app scan."
+  appScanContext: string | undefined = undefined;
+
+  // "Provide the SCA project name for the app in the container image."
+  appScanProject: string | undefined = undefined;
+
+  // "Scan container in a persistent context and keep the version."
+  asRef: boolean = false;
+
+  // "Specify the project name for the base image scan."
+  baseImageScanProject: string | undefined = undefined;
+
+  // "Override the default ENTRYPOINT of the image for profiling."
+  entrypoint: string | undefined = undefined;
+
+  // "Set environment variables that the image needs to run (e.g. KEY=value)."
+  env: string | undefined = undefined;
+
+  // "Add a directory containing profiling data to include in the scan."
+  profilingDataDir: string | undefined = undefined;
+
+  // "Set the maximum allowed container image size (GB) for dynamic profiling."
+  profilingMaxSize: number | undefined = undefined;
+
+  // "Publish a container's port(s) to the host for profiling (e.g. 8080:80)."
+  publish: string | undefined = undefined;
+
+  // "Bind mount a volume for container profiling (e.g. /host/path:/container/path)."
+  volume: string | undefined = undefined;
+
   // "Scan a specified artifact or a package. The path to an artifact must be set with `scanPath`."
   scanPackage: boolean = false;
 
@@ -314,6 +344,56 @@ export function parseInputParams(): InputParameters {
     taskArgs.projectTags = projectTags;
   }
 
+  const appScanContext = tl.getInput("appScanContext", false);
+  if (appScanContext) {
+    taskArgs.appScanContext = appScanContext;
+  }
+
+  const appScanProject = tl.getInput("appScanProject", false);
+  if (appScanProject) {
+    taskArgs.appScanProject = appScanProject;
+  }
+
+  const asRef = tl.getBoolInput("asRef", false);
+  if (asRef) {
+    taskArgs.asRef = asRef;
+  }
+
+  const baseImageScanProject = tl.getInput("baseImageScanProject", false);
+  if (baseImageScanProject) {
+    taskArgs.baseImageScanProject = baseImageScanProject;
+  }
+
+  const entrypoint = tl.getInput("entrypoint", false);
+  if (entrypoint) {
+    taskArgs.entrypoint = entrypoint;
+  }
+
+  const env = tl.getInput("env", false);
+  if (env) {
+    taskArgs.env = env;
+  }
+
+  const profilingDataDir = tl.getInput("profilingDataDir", false);
+  if (profilingDataDir) {
+    taskArgs.profilingDataDir = profilingDataDir;
+  }
+
+  const profilingMaxSizeStr = tl.getInput("profilingMaxSize", false);
+  if (profilingMaxSizeStr) {
+    taskArgs.profilingMaxSize = parseInt(profilingMaxSizeStr, 10);
+  }
+
+  const publish = tl.getInput("publish", false);
+  if (publish) {
+    taskArgs.publish = publish;
+  }
+
+  const volume = tl.getInput("volume", false);
+  if (volume) {
+    taskArgs.volume = volume;
+  }
+
   const scanPackage = tl.getBoolInput("scanPackage", false);
   if (scanPackage) {
     taskArgs.scanPackage = scanPackage;
@@ -386,6 +466,16 @@ function logInputParameters(params: InputParameters) {
   console.log("Output Type is:", params.outputType);
   console.log("Finding Tags are:", params.findingTags);
   console.log("Project Tags are:", params.projectTags);
+  console.log("App Scan Context is:", params.appScanContext);
+  console.log("App Scan Project is:", params.appScanProject);
+  console.log("As Ref is:", params.asRef);
+  console.log("Base Image Scan Project is:", params.baseImageScanProject);
+  console.log("Entrypoint is:", params.entrypoint);
+  console.log("Env is:", params.env);
+  console.log("Profiling Data Dir is:", params.profilingDataDir);
+  console.log("Profiling Max Size is:", params.profilingMaxSize);
+  console.log("Publish is:", params.publish);
+  console.log("Volume is:", params.volume);
   console.log("Scan Package is:", params.scanPackage);
   console.log("Scan Path is:", params.scanPath);
   console.log("Scan Tools is:", params.scanTools);
