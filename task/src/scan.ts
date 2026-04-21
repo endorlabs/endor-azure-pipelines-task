@@ -20,6 +20,10 @@ export function buildEndorctlRunOptions(
     `--log-level=${inputParams.logLevel}`,
   );
 
+  if (inputParams.scanAISast) {
+    options.push(`--ai-sast`);
+  }
+
   if (inputParams.scanContainer) {
     if (inputParams.sarifFile) {
       options.push(`--sarif-file=${inputParams.sarifFile}`);

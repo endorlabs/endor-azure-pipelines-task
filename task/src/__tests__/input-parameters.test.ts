@@ -22,7 +22,7 @@ describe("validateInputParameters", () => {
     const err2 = inputParams.validate();
     expect(err2).toBeInstanceOf(Error);
     expect(err2?.message).toBe(
-      "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer` or `scanPackage` must be enabled"
+      "At least one of `scanDependencies`, `scanSecrets`, `scanTools`, `scanSast`, `scanContainer`, `scanAISast` or `scanPackage` must be enabled"
     );
 
     inputParams.scanDependencies = true;
@@ -151,5 +151,16 @@ describe("detached ref name logic", () => {
     }
 
     expect(inputParams.additionalParameters).toBe("--verbose");
+  });
+});
+
+describe("AI SAST input behavior", () => {
+  test("stores scanAISast without mutating additionalParameters", () => {
+    const inputParams = new InputParameters();
+    inputParams.scanAISast = true;
+    inputParams.additionalParameters = "--verbose --debug";
+
+    expect(inputParams.scanAISast).toBe(true);
+    expect(inputParams.additionalParameters).toBe("--verbose --debug");
   });
 });
