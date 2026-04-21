@@ -35,7 +35,7 @@ describe("buildEndorctlRunOptions", () => {
     expect(opts).not.toContain("container");
   });
 
-  test("container scan uses 'container scan <image>' subcommand", () => {
+  test("container scan uses 'container scan' subcommand with --image flag", () => {
     const p = baseParams();
     p.scanDependencies = false;
     p.scanContainer = true;
@@ -44,9 +44,9 @@ describe("buildEndorctlRunOptions", () => {
     const opts = buildEndorctlRunOptions(p);
     expect(opts[0]).toBe("container");
     expect(opts[1]).toBe("scan");
-    expect(opts[2]).toBe("myregistry/myimage:latest");
+    expect(opts).toContain("--image=myregistry/myimage:latest");
+    expect(opts).not.toContain("myregistry/myimage:latest");
     expect(opts).not.toContain("--dependencies=true");
-    expect(opts).not.toContain("--container=myregistry/myimage:latest");
   });
 
   test("container scan includes global flags", () => {
@@ -166,7 +166,8 @@ describe("buildEndorctlRunOptions", () => {
     const opts = buildEndorctlRunOptions(p);
     expect(opts[0]).toBe("container");
     expect(opts[1]).toBe("scan");
-    expect(opts[2]).toBe("myregistry/myimage:v1.2.3");
+    expect(opts).toContain("--image=myregistry/myimage:v1.2.3");
+    expect(opts).not.toContain("myregistry/myimage:v1.2.3");
     expect(opts).toContain("--os-reachability");
     expect(opts).toContain("--dockerfile-path=./docker/Dockerfile.prod");
     expect(opts).toContain("--base-image-name=node:18-alpine");
@@ -193,6 +194,7 @@ describe("buildEndorctlRunOptions", () => {
     expect(opts).not.toContain("--secrets=true");
     expect(opts).not.toContain("--sast=true");
     expect(opts).not.toContain("--tags=some-tag");
+    expect(opts.some((o) => o.startsWith("--sarif-file"))).toBe(false);
   });
 
   test("regular scan does not include container flags", () => {
@@ -312,33 +314,25 @@ describe("buildEndorctlRunOptions", () => {
     expect(opts).toContain("--volume=/host/path:/container/path");
   });
 
-  test("container scan command ordering: subcommand, image, then flags", () => {
+  test("container scan command ordering: subcommand then flags, image as --image flag", () => {
     const p = validContainerParams();
     p.osReachability = true;
 
     const opts = buildEndorctlRunOptions(p);
-    const containerIdx = opts.indexOf("container");
-    const scanIdx = opts.indexOf("scan");
-    const imageIdx = opts.indexOf("myimage:latest");
-    const flagIdx = opts.indexOf("--os-reachability");
+    expect(opts[0]).toBe("container");
+    expect(opts[1]).toBe("scan");
+    expect(opts).toContain("--image=myimage:latest");
+    expect(opts).not.toContain("myimage:latest");
 
-    expect(containerIdx).toBe(0);
-    expect(scanIdx).toBe(1);
-    expect(imageIdx).toBe(2);
-    expect(flagIdx).toBeGreaterThan(imageIdx);
+    const imageIdx = opts.indexOf("--image=myimage:latest");
+    const osIdx = opts.indexOf("--os-reachability");
+    expect(imageIdx).toBeGreaterThan(1);
+    expect(osIdx).toBeGreaterThan(imageIdx);
   });
 
-  test("container scan includes --sarif-file when set", () => {
+  test("container scan never includes --sarif-file (not a valid container scan flag)", () => {
     const p = validContainerParams();
     p.sarifFile = "container_results.sarif";
-
-    const opts = buildEndorctlRunOptions(p);
-    expect(opts).toContain("--sarif-file=container_results.sarif");
-  });
-
-  test("container scan omits --sarif-file when not set", () => {
-    const p = validContainerParams();
-    p.sarifFile = undefined;
 
     const opts = buildEndorctlRunOptions(p);
     expect(opts.some((o) => o.startsWith("--sarif-file"))).toBe(false);

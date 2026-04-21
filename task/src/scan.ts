@@ -6,7 +6,7 @@ export function buildEndorctlRunOptions(
   const options: string[] = [];
 
   if (inputParams.scanContainer) {
-    options.push(`container`, `scan`, `${inputParams.image}`);
+    options.push(`container`, `scan`);
   } else {
     options.push(`scan`);
   }
@@ -20,14 +20,8 @@ export function buildEndorctlRunOptions(
     `--log-level=${inputParams.logLevel}`,
   );
 
-  if (inputParams.scanAISast) {
-    options.push(`--ai-sast`);
-  }
-
   if (inputParams.scanContainer) {
-    if (inputParams.sarifFile) {
-      options.push(`--sarif-file=${inputParams.sarifFile}`);
-    }
+    options.push(`--image=${inputParams.image}`);
 
     if (inputParams.appScanContext) {
       options.push(`--app-scan-context=${inputParams.appScanContext}`);
@@ -106,6 +100,10 @@ export function buildEndorctlRunOptions(
     }
   } else {
     options.push(`--sarif-file=${inputParams.sarifFile}`);
+
+    if (inputParams.scanAISast) {
+      options.push(`--ai-sast`);
+    }
 
     if (inputParams.scanDependencies) {
       options.push(`--dependencies=true`);
