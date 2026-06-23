@@ -31,6 +31,14 @@
       "helpMarkDown": "Set to the namespace of the project that you are working with."
     },
     {
+      "name": "endorAPI",
+      "type": "string",
+      "label": "Endor Labs API URL",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Endor Labs API endpoint used to download endorctl and run the scan. Leave empty to use the Server URL configured on the service connection (e.g. the EU endpoint); falls back to https://api.endorlabs.com."
+    },
+    {
       "name": "additionalArgs",
       "label": "Additional command-line args for endorctl CLI",
       "type": "string",

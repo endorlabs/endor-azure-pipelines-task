@@ -219,12 +219,42 @@ class InputParameters {
   }
 }
 
+/**
+ * Returns the raw Server URL configured on the Endor Labs service connection,
+ * or undefined when no service connection or URL is configured. The caller is
+ * responsible for normalizing the value.
+ */
+function getApiUrlFromServiceConnection(): string | undefined {
+  const serviceConnectionEndpoint = tl.getInput(
+    "serviceConnectionEndpoint",
+    false
+  );
+
+  if (!serviceConnectionEndpoint) {
+    return undefined;
+  }
+
+  return tl.getEndpointUrl(serviceConnectionEndpoint, true);
+}
+
 export function parseInputParams(): InputParameters {
   const taskArgs: InputParameters = new InputParameters();
 
-  const endorAPI = tl.getInput("endorAPI", false);
-  if (endorAPI) {
-    taskArgs.endorAPI = endorAPI;
+  // Resolve the API endpoint. Precedence:
+  //   1. explicit `endorAPI` input,
+  //   2. the service connection's Server URL (e.g. the EU endpoint),
+  //   3. the default already set on InputParameters (https://api.endorlabs.com).
+  // The resolved value is normalized (trimmed and with trailing slashes
+  // removed) so it is safe to use as a base URL for both the endorctl download
+  // and the `--api` scan flag. A blank/whitespace input is treated as unset so
+  // it still falls through to the service connection URL.
+  const explicitAPI = (tl.getInput("endorAPI", false) ?? "").trim();
+  const resolvedAPI = explicitAPI || getApiUrlFromServiceConnection();
+  if (resolvedAPI) {
+    const normalized = resolvedAPI.trim().replace(/\/+$/, "");
+    if (normalized) {
+      taskArgs.endorAPI = normalized;
+    }
   }
 
   const apiKey = tl.getInput("apiKey", false);
