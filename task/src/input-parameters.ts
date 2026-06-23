@@ -220,9 +220,9 @@ class InputParameters {
 }
 
 /**
- * Returns the Server URL configured on the Endor Labs service connection, with
- * any trailing slashes removed so it can be safely used as a base URL. Returns
- * undefined when no service connection or URL is configured.
+ * Returns the raw Server URL configured on the Endor Labs service connection,
+ * or undefined when no service connection or URL is configured. The caller is
+ * responsible for normalizing the value.
  */
 function getApiUrlFromServiceConnection(): string | undefined {
   const serviceConnectionEndpoint = tl.getInput(
@@ -234,13 +234,7 @@ function getApiUrlFromServiceConnection(): string | undefined {
     return undefined;
   }
 
-  const endpointUrl = tl.getEndpointUrl(serviceConnectionEndpoint, true);
-  if (!endpointUrl) {
-    return undefined;
-  }
-
-  const normalized = endpointUrl.trim().replace(/\/+$/, "");
-  return normalized || undefined;
+  return tl.getEndpointUrl(serviceConnectionEndpoint, true);
 }
 
 export function parseInputParams(): InputParameters {
@@ -250,14 +244,16 @@ export function parseInputParams(): InputParameters {
   //   1. explicit `endorAPI` input,
   //   2. the service connection's Server URL (e.g. the EU endpoint),
   //   3. the default already set on InputParameters (https://api.endorlabs.com).
-  // This is used for both the endorctl download and the `--api` scan flag.
-  const endorAPI = tl.getInput("endorAPI", false);
-  if (endorAPI) {
-    taskArgs.endorAPI = endorAPI;
-  } else {
-    const endpointUrl = getApiUrlFromServiceConnection();
-    if (endpointUrl) {
-      taskArgs.endorAPI = endpointUrl;
+  // The resolved value is normalized (trimmed and with trailing slashes
+  // removed) so it is safe to use as a base URL for both the endorctl download
+  // and the `--api` scan flag. A blank/whitespace input is treated as unset so
+  // it still falls through to the service connection URL.
+  const explicitAPI = (tl.getInput("endorAPI", false) ?? "").trim();
+  const resolvedAPI = explicitAPI || getApiUrlFromServiceConnection();
+  if (resolvedAPI) {
+    const normalized = resolvedAPI.trim().replace(/\/+$/, "");
+    if (normalized) {
+      taskArgs.endorAPI = normalized;
     }
   }
 

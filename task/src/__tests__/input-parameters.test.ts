@@ -1,5 +1,21 @@
-import { InputParameters } from "../input-parameters";
-import { expect, test, describe } from "@jest/globals";
+import { InputParameters, parseInputParams } from "../input-parameters";
+import { expect, test, describe, jest, beforeEach } from "@jest/globals";
+import * as tl from "azure-pipelines-task-lib/task";
+
+jest.mock("azure-pipelines-task-lib/task", () => ({
+  getInput: jest.fn(),
+  getBoolInput: jest.fn(),
+  getEndpointUrl: jest.fn(),
+  getVariable: jest.fn(),
+}));
+
+const mockGetInput = tl.getInput as jest.MockedFunction<typeof tl.getInput>;
+const mockGetBoolInput = tl.getBoolInput as jest.MockedFunction<
+  typeof tl.getBoolInput
+>;
+const mockGetEndpointUrl = tl.getEndpointUrl as jest.MockedFunction<
+  typeof tl.getEndpointUrl
+>;
 
 describe("validateInputParameters", () => {
   test("validate the input parameters", () => {
@@ -151,6 +167,65 @@ describe("detached ref name logic", () => {
     }
 
     expect(inputParams.additionalParameters).toBe("--verbose");
+  });
+});
+
+describe("parseInputParams - endorAPI resolution", () => {
+  function setInputs(map: { [key: string]: string | undefined }) {
+    mockGetInput.mockImplementation((name: string) => map[name]);
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetBoolInput.mockReturnValue(false);
+    mockGetEndpointUrl.mockReturnValue(undefined);
+  });
+
+  test("defaults to https://api.endorlabs.com when nothing is set", () => {
+    setInputs({ namespace: "ns" });
+    expect(parseInputParams().endorAPI).toBe("https://api.endorlabs.com");
+  });
+
+  test("explicit endorAPI input takes precedence over service connection URL", () => {
+    setInputs({
+      endorAPI: "https://api.custom.com",
+      serviceConnectionEndpoint: "sc",
+      namespace: "ns",
+    });
+    mockGetEndpointUrl.mockReturnValue("https://api.eu.endorlabs.com");
+    expect(parseInputParams().endorAPI).toBe("https://api.custom.com");
+  });
+
+  test("falls back to the service connection Server URL when no input is given", () => {
+    setInputs({ serviceConnectionEndpoint: "sc", namespace: "ns" });
+    mockGetEndpointUrl.mockReturnValue("https://api.eu.endorlabs.com");
+    expect(parseInputParams().endorAPI).toBe("https://api.eu.endorlabs.com");
+  });
+
+  test("normalizes trailing slashes and whitespace on an explicit input", () => {
+    setInputs({ endorAPI: "  https://api.eu.endorlabs.com/  ", namespace: "ns" });
+    expect(parseInputParams().endorAPI).toBe("https://api.eu.endorlabs.com");
+  });
+
+  test("normalizes the service connection Server URL", () => {
+    setInputs({ serviceConnectionEndpoint: "sc", namespace: "ns" });
+    mockGetEndpointUrl.mockReturnValue("https://api.eu.endorlabs.com//");
+    expect(parseInputParams().endorAPI).toBe("https://api.eu.endorlabs.com");
+  });
+
+  test("a whitespace-only input is treated as unset and falls through to the service connection", () => {
+    setInputs({
+      endorAPI: "   ",
+      serviceConnectionEndpoint: "sc",
+      namespace: "ns",
+    });
+    mockGetEndpointUrl.mockReturnValue("https://api.eu.endorlabs.com");
+    expect(parseInputParams().endorAPI).toBe("https://api.eu.endorlabs.com");
+  });
+
+  test("a whitespace-only input with no service connection keeps the default", () => {
+    setInputs({ endorAPI: "   ", namespace: "ns" });
+    expect(parseInputParams().endorAPI).toBe("https://api.endorlabs.com");
   });
 });
 
