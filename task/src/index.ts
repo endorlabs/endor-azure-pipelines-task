@@ -51,7 +51,18 @@ async function run() {
     let endorctlParams = buildEndorctlRunOptions(taskArgs);
 
     let toolRunner = tl.tool(endorctlPath).arg(endorctlParams);
-    const exitCode = await toolRunner.execAsync();
+
+    // Derive the Endor Labs UI base URL from the API URL (the UI host is the
+    // API host with `api` replaced by `app`, e.g.
+    // https://api.endorlabs.com -> https://app.endorlabs.com) and pass it to
+    // endorctl via the ENDOR_UI environment variable. The child inherits the
+    // full agent environment; we only add ENDOR_UI on top of it.
+    const env: { [key: string]: string | undefined } = { ...process.env };
+    if (taskArgs.endorAPI) {
+      env.ENDOR_UI = taskArgs.endorAPI.replace("api", "app");
+    }
+
+    const exitCode = await toolRunner.execAsync({ env });
     if (exitCode != 0) {
       console.log("Endorctl scan failed with exit code:", exitCode);
     }
