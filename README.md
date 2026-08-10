@@ -81,6 +81,52 @@ The following input parameters are also supported for the Endor Labs Azure pipel
 | `projectName` | Specify a project name for a container image scan or for a package scan.|
 | `image` | Specify a container image to scan.|
 
+## Running behind an HTTP proxy
+
+Self-hosted agents that reach the internet only through a corporate proxy are
+supported. The task discovers the proxy from one of two places, in this order:
+
+1. **The agent's own proxy configuration** — the `.proxy` file created when the
+   agent is configured with `--proxyurl`. Hosts in the agent's bypass list are
+   contacted directly.
+2. **Proxy environment variables** — the first one set out of `HTTPS_PROXY`,
+   `https_proxy`, `HTTP_PROXY`, `http_proxy`. `NO_PROXY` / `no_proxy` is
+   honoured, and accepts hostnames, `.domain` suffixes, `host:port` pairs, and
+   `*`.
+
+Because environment variables are also read by `endorctl` itself, setting them at
+the job or pipeline level covers both the tool download and the scan:
+
+```yaml
+- task: Endor-Labs-Scan@1
+  displayName: 'Endor Labs Scan'
+  env:
+    HTTPS_PROXY: 'http://proxy.corp.local:8080'
+    NO_PROXY: '.corp.local,artifactory.corp.local'
+  inputs:
+    serviceConnectionEndpoint: 'endorlabs-service-connection'
+    namespace: 'endor'
+```
+
+If the proxy requires authentication, supply the credentials in the URL as
+`http://user:password@proxy.corp.local:8080`, percent-encoding any reserved
+characters in the username or password (for example `\` as `%5C` and `@` as
+`%40`). Store the value in a secret variable rather than in the YAML. Prefer the
+agent's `--proxyurl` configuration where possible, so the credentials live on the
+agent instead of in the pipeline definition.
+
+A few limitations are worth knowing before you start:
+
+- Only **Basic** and **anonymous** proxy authentication are supported. **NTLM and
+  Kerberos/Negotiate proxies are not** — they require a challenge-response
+  handshake the task does not implement.
+- Proxy auto-configuration (**PAC**) scripts and the **Windows system proxy**
+  (Internet Options / `netsh winhttp`) are not read. Supply an explicit proxy
+  address using one of the two mechanisms above.
+- If the proxy **intercepts TLS**, the agent additionally needs to trust your
+  internal certificate authority. Point `NODE_EXTRA_CA_CERTS` at your CA bundle,
+  or configure the agent with `--sslcacert`.
+
 ## Example Workflows
 
 ### Example: Use sarifFile to view scan result findings in `AdvancedSecurity` tab under `Repos`

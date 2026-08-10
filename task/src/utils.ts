@@ -6,19 +6,27 @@ import * as tl from "azure-pipelines-task-lib/task";
 
 import { ClientChecksumsType, SetupProps, VersionResponse } from "./types";
 import { arch } from "os";
+import { createProxyAgent } from "./proxy";
 
 export type BinaryFileInfo = {
   filename: string;
   downloadUrl: string;
 };
 
+const DOWNLOAD_TIMEOUT_MS = 300000;
+const API_TIMEOUT_MS = 30000;
+
+/** Some corporate proxies reject requests that carry no User-Agent. */
+const USER_AGENT = "endorctl-azure-pipelines-task";
+
 /**
  * Create a hash from a file
  */
 export const createHashFromFile = (filePath: string) =>
-  new Promise((resolve) => {
+  new Promise<string>((resolve, reject) => {
     const hash = crypto.createHash("sha256");
     fs.createReadStream(filePath)
+      .on("error", reject)
       .on("data", (data) => hash.update(data))
       .on("end", () => resolve(hash.digest("hex")));
   });
@@ -176,11 +184,10 @@ export const setupEndorctl = async ({
     console.info(`Endorctl downloaded at ${endorctlDir}`);
     return `${endorctlDir}${path.sep}endorctl${isWindows ? ".exe" : ""}`;
   } catch (error: any) {
-    console.info("failed to download endorctl.");
-    console.info(error);
+    // Returning "" here used to leave the task running an empty command, which
+    // hid the real cause.
+    throw new Error(`Failed to set up endorctl: ${error.message ?? error}`);
   }
-
-  return "";
 };
 
 /**
@@ -201,63 +208,117 @@ export async function downloadBinary(
     return;
   }
 
-  const downloadEndorctlFunc = (urlString: string, filename: string) =>
-    new Promise<void>((resolve, reject) => {
-      const fileWriter = fs.createWriteStream(filePath, {
-        mode: 0o766,
-      });
-      const url = new URL(urlString);
-      const requestOpts: https.RequestOptions = {
-        host: url.hostname,
-        path: url.pathname,
-        timeout: 300000,
-      };
+  console.log(
+    `Downloading endorctl: ${fileInfo.filename} from url: ${fileInfo.downloadUrl}`
+  );
 
-      https
-        .get(requestOpts, (res) => {
-          res.on("error", (err) => {
-            console.error(`endorctl binary download failed: ${err.message}`);
-            reject(err);
-          });
+  // Resolved before the file is created: an unusable proxy setting must not
+  // leave a zero byte binary behind for the "already exists" check to reuse.
+  const agent = createProxyAgent(fileInfo.downloadUrl);
 
-          const respError = res.statusCode !== 200;
-          if (respError) {
-            fileWriter.close();
+  await new Promise<void>((resolve, reject) => {
+    const fileWriter = fs.createWriteStream(filePath, {
+      mode: 0o755,
+    });
+
+    let settled = false;
+    // Delete the partial file, otherwise the "already exists" check above makes
+    // the next run reuse it and fail on the checksum instead of the real error.
+    const fail = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      fileWriter.destroy();
+      removeIfExists(filePath);
+      reject(error);
+    };
+
+    // Attached before the request: opening the stream can fail on its own, and
+    // an unhandled stream error would take the whole task down.
+    fileWriter.on("error", (err) =>
+      fail(new Error(`Failed to write ${filePath}: ${err.message}`))
+    );
+
+    // https.get throws synchronously on a malformed URL; route that through
+    // fail() so the partial file is cleaned up like any other failure.
+    let request: ReturnType<typeof https.get>;
+    try {
+      request = https.get(
+        fileInfo.downloadUrl,
+        {
+          agent,
+          timeout: DOWNLOAD_TIMEOUT_MS,
+          headers: { "user-agent": USER_AGENT },
+        },
+        (res) => {
+          res.on("error", (err) =>
+            fail(
+              new Error(
+                describeRequestFailure(
+                  err,
+                  fileInfo.downloadUrl,
+                  `Download of endorctl binary ${fileInfo.filename} from`
+                )
+              )
+            )
+          );
+
+          if (res.statusCode !== 200) {
+            // Drain the body so the socket can be released.
+            res.resume();
+            fail(
+              new Error(
+                describeHttpFailure(res.statusCode, fileInfo.downloadUrl)
+              )
+            );
+            return;
           }
 
           fileWriter.on("close", () => {
-            console.log(`${filename} saved to ${filePath}`);
-            if (respError) {
-              reject(new Error(`${res.statusCode}`));
-            } else {
-              resolve();
-            }
+            if (settled) return;
+            settled = true;
+            console.log(`${fileInfo.filename} saved to ${filePath}`);
+            resolve();
           });
 
           res.pipe(fileWriter);
-        })
-        .on("timeout", () => {
-          console.error(`Download of ${filename} timed out`);
-          reject();
-        })
-        .on("error", (err) => {
-          console.error(
-            `Download request for endorctl binary ${filename} failed: ${err.message}`
-          );
-          reject(err);
-        });
+        }
+      );
+    } catch (err: any) {
+      fail(
+        new Error(
+          describeRequestFailure(
+            err,
+            fileInfo.downloadUrl,
+            `Download request for endorctl binary ${fileInfo.filename} to`
+          )
+        )
+      );
+      return;
+    }
+
+    request.on("timeout", () => {
+      request.destroy();
+      fail(
+        new Error(
+          `Download of ${fileInfo.filename} timed out after ${DOWNLOAD_TIMEOUT_MS}ms`
+        )
+      );
     });
 
-  try {
-    console.log(
-      `Downloading endorctl: ${fileInfo.filename} from url: ${fileInfo.downloadUrl}`
+    request.on("error", (err) =>
+      fail(
+        new Error(
+          describeRequestFailure(
+            err,
+            fileInfo.downloadUrl,
+            `Download request for endorctl binary ${fileInfo.filename} to`
+          )
+        )
+      )
     );
-    await downloadEndorctlFunc(fileInfo.downloadUrl, fileInfo.filename);
-    console.log(`Successfully downloaded ${fileInfo.filename} file.`);
-    return;
-  } catch (err: any) {
-    console.error(`Failed to download ${fileInfo.filename}: ${err.message}`);
-  }
+  });
+
+  console.log(`Successfully downloaded ${fileInfo.filename} file.`);
 }
 
 /**
@@ -265,8 +326,14 @@ export async function downloadBinary(
  */
 async function makeHttpsCall(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    https
-      .get(url, (res) => {
+    const request = https.get(
+      url,
+      {
+        agent: createProxyAgent(url),
+        timeout: API_TIMEOUT_MS,
+        headers: { "user-agent": USER_AGENT },
+      },
+      (res) => {
         let data: string = "";
 
         // Handle incoming data chunks
@@ -274,19 +341,82 @@ async function makeHttpsCall(url: string): Promise<string> {
           data += chunk;
         });
 
+        res.on("error", (error) =>
+          reject(new Error(describeRequestFailure(error, url, "Request to")))
+        );
+
         // The whole response has been received
         res.on("end", () => {
-          try {
-            const parsedData = JSON.parse(data);
-            console.log("Response Data:", parsedData);
-            resolve(data);
-          } catch (error) {
-            reject(`Error parsing response: ${error}`);
+          if (res.statusCode !== 200) {
+            reject(new Error(describeHttpFailure(res.statusCode, url)));
+            return;
           }
+
+          resolve(data);
         });
-      })
-      .on("error", (error) => {
-        reject(`HTTPS request failed: ${error}`);
-      });
+      }
+    );
+
+    request.on("timeout", () => {
+      request.destroy();
+      reject(new Error(`Request to ${url} timed out after ${API_TIMEOUT_MS}ms`));
+    });
+
+    request.on("error", (error) =>
+      reject(new Error(describeRequestFailure(error, url, "Request to")))
+    );
   });
+}
+
+/** Untrusted certificate chain, usually a TLS-intercepting proxy. */
+const TLS_TRUST_ERROR_CODES = new Set([
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+  "UNABLE_TO_GET_ISSUER_CERT",
+  "UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+  "SELF_SIGNED_CERT_IN_CHAIN",
+  "DEPTH_ZERO_SELF_SIGNED_CERT",
+  "CERT_UNTRUSTED",
+]);
+
+/**
+ * Describes a failed request, pointing at the CA bundle when the proxy is
+ * intercepting TLS.
+ */
+export function describeRequestFailure(
+  error: NodeJS.ErrnoException,
+  url: string,
+  operation: string
+): string {
+  const summary = `${operation} ${url} failed: ${error.message}`;
+
+  if (error.code && TLS_TRUST_ERROR_CODES.has(error.code)) {
+    return `${summary}. This usually means a TLS-intercepting proxy is presenting a certificate signed by an internal certificate authority. Point NODE_EXTRA_CA_CERTS at that authority's certificate bundle on the agent, or configure the Azure Pipelines agent with --sslcacert.`;
+  }
+
+  return summary;
+}
+
+/** Describes a non-200 response, naming the proxy for the codes it owns. */
+export function describeHttpFailure(
+  statusCode: number | undefined,
+  url: string
+): string {
+  const summary = `Request to ${url} failed with HTTP status ${statusCode}`;
+
+  switch (statusCode) {
+    case 407:
+      return `${summary}. The proxy requires authentication - supply credentials as http://user:password@host:port, or configure the Azure Pipelines agent with --proxyurl. Note that only Basic authentication is supported; NTLM and Kerberos proxies are not.`;
+    default:
+      return summary;
+  }
+}
+
+function removeIfExists(filePath: string) {
+  try {
+    fs.rmSync(filePath, { force: true });
+  } catch (error: any) {
+    console.warn(
+      `Failed to remove incomplete download ${filePath}: ${error.message}`
+    );
+  }
 }
