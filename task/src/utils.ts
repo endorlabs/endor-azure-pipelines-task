@@ -1,4 +1,7 @@
 import * as https from "https";
+import * as http from "http";
+import * as net from "net";
+import * as tls from "tls";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -11,6 +14,203 @@ export type BinaryFileInfo = {
   filename: string;
   downloadUrl: string;
 };
+
+/**
+ * Resolves the proxy URL to use for a given target URL, honoring:
+ *   1. The Azure Pipelines agent proxy (configured via `--proxyurl` / `.proxy`).
+ *   2. The HTTPS_PROXY / HTTP_PROXY environment variables (upper or lower case).
+ *
+ * Returns `undefined` when no proxy applies, or when the target host matches the
+ * NO_PROXY / agent bypass list, so requests continue to go direct (the default
+ * behavior on cloud-hosted agents with open internet access).
+ */
+export function resolveProxyUrl(targetUrl: string): string | undefined {
+  // 1. Azure DevOps agent proxy. Returns null when the target is in the agent's
+  // bypass list, in which case we should not fall back to the env-var proxy.
+  const agentProxy = tl.getHttpProxyConfiguration(targetUrl);
+  if (agentProxy) {
+    if (agentProxy.proxyUrl) {
+      return applyProxyAuth(
+        agentProxy.proxyUrl,
+        agentProxy.proxyUsername,
+        agentProxy.proxyPassword
+      );
+    }
+    return undefined;
+  }
+
+  // 2. Standard proxy environment variables.
+  const envProxy =
+    process.env.HTTPS_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTP_PROXY ||
+    process.env.http_proxy;
+
+  if (envProxy && !isNoProxy(targetUrl)) {
+    return envProxy;
+  }
+
+  return undefined;
+}
+
+/**
+ * Returns true when the target host matches the NO_PROXY / no_proxy list.
+ * Supports "*", exact hosts, and ".suffix" / "suffix" domain matches.
+ */
+export function isNoProxy(targetUrl: string): boolean {
+  const noProxy = process.env.NO_PROXY || process.env.no_proxy;
+  if (!noProxy) {
+    return false;
+  }
+
+  let host: string;
+  try {
+    host = new URL(targetUrl).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+
+  return noProxy
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter((entry) => entry.length > 0)
+    .some((entry) => {
+      if (entry === "*") {
+        return true;
+      }
+      const normalized = entry.startsWith(".") ? entry.slice(1) : entry;
+      return host === normalized || host.endsWith(`.${normalized}`);
+    });
+}
+
+/**
+ * Embeds credentials into the proxy URL when the agent supplied a username and
+ * the URL does not already contain credentials.
+ */
+function applyProxyAuth(
+  proxyUrl: string,
+  username?: string,
+  password?: string
+): string {
+  if (!username) {
+    return proxyUrl;
+  }
+  try {
+    const parsed = new URL(proxyUrl);
+    if (!parsed.username) {
+      parsed.username = username;
+      if (password) {
+        parsed.password = password;
+      }
+    }
+    return parsed.toString();
+  } catch {
+    return proxyUrl;
+  }
+}
+
+/**
+ * A dependency-free HTTPS agent that tunnels requests through an HTTP(S) proxy
+ * using the CONNECT method. 
+ */
+class ProxyTunnelAgent extends https.Agent {
+  private readonly proxyUrl: URL;
+
+  constructor(proxyUrl: URL, options?: https.AgentOptions) {
+    super(options);
+    this.proxyUrl = proxyUrl;
+  }
+
+  createConnection(
+    options: { host?: string; port?: number; servername?: string },
+    callback: (err: Error | null, socket?: net.Socket) => void
+  ): void {
+    const targetHost = options.host ?? "";
+    const targetPort = options.port ?? 443;
+
+    const proxyIsHttps = this.proxyUrl.protocol === "https:";
+    const proxyModule = proxyIsHttps ? https : http;
+    const proxyPort = this.proxyUrl.port
+      ? parseInt(this.proxyUrl.port, 10)
+      : proxyIsHttps
+        ? 443
+        : 80;
+
+    const headers: http.OutgoingHttpHeaders = {
+      Host: `${targetHost}:${targetPort}`,
+    };
+    if (this.proxyUrl.username) {
+      const creds = `${decodeURIComponent(
+        this.proxyUrl.username
+      )}:${decodeURIComponent(this.proxyUrl.password)}`;
+      headers["Proxy-Authorization"] = `Basic ${Buffer.from(creds).toString(
+        "base64"
+      )}`;
+    }
+
+    const connectReq = proxyModule.request({
+      host: this.proxyUrl.hostname,
+      port: proxyPort,
+      method: "CONNECT",
+      path: `${targetHost}:${targetPort}`,
+      headers,
+    });
+
+    connectReq.on("connect", (res, socket) => {
+      if (res.statusCode !== 200) {
+        socket.destroy();
+        callback(
+          new Error(
+            `Proxy CONNECT to ${targetHost}:${targetPort} failed with status ${res.statusCode}`
+          )
+        );
+        return;
+      }
+
+      const tlsSocket = tls.connect(
+        {
+          socket,
+          servername: targetHost,
+        },
+        () => callback(null, tlsSocket)
+      );
+      tlsSocket.on("error", (err) => callback(err));
+    });
+
+    connectReq.on("error", (err) => callback(err));
+    connectReq.end();
+  }
+}
+
+/**
+ * Returns an HTTPS agent that routes through the configured corporate proxy when
+ * one applies, otherwise `undefined` so the request goes direct.
+ */
+export function getProxyAgent(targetUrl: string): https.Agent | undefined {
+  const proxyUrl = resolveProxyUrl(targetUrl);
+  if (!proxyUrl) {
+    return undefined;
+  }
+
+  let parsedProxy: URL;
+  try {
+    parsedProxy = new URL(proxyUrl);
+  } catch {
+    console.warn(`Ignoring invalid proxy URL: ${proxyUrl}`);
+    return undefined;
+  }
+
+  console.info(
+    `Routing request through proxy ${parsedProxy.protocol}//${parsedProxy.host}`
+  );
+  if (process.env.NODE_EXTRA_CA_CERTS) {
+    console.info(
+      `Using additional CA bundle from NODE_EXTRA_CA_CERTS: ${process.env.NODE_EXTRA_CA_CERTS}`
+    );
+  }
+
+  return new ProxyTunnelAgent(parsedProxy);
+}
 
 /**
  * Create a hash from a file
@@ -211,6 +411,7 @@ export async function downloadBinary(
         host: url.hostname,
         path: url.pathname,
         timeout: 300000,
+        agent: getProxyAgent(urlString),
       };
 
       https
@@ -256,7 +457,9 @@ export async function downloadBinary(
     console.log(`Successfully downloaded ${fileInfo.filename} file.`);
     return;
   } catch (err: any) {
-    console.error(`Failed to download ${fileInfo.filename}: ${err.message}`);
+    const message = err?.message ?? String(err);
+    console.error(`Failed to download ${fileInfo.filename}: ${message}`);
+    throw err instanceof Error ? err : new Error(message);
   }
 }
 
@@ -265,8 +468,9 @@ export async function downloadBinary(
  */
 async function makeHttpsCall(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const agent = getProxyAgent(url);
     https
-      .get(url, (res) => {
+      .get(url, { agent }, (res) => {
         let data: string = "";
 
         // Handle incoming data chunks
