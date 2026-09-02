@@ -122,11 +122,15 @@ class ProxyTunnelAgent extends https.Agent {
   }
 
   createConnection(
-    options: { host?: string; port?: number; servername?: string },
-    callback: (err: Error | null, socket?: net.Socket) => void
+    options: http.ClientRequestArgs,
+    callback?: (err: Error | null, socket?: net.Socket) => void
   ): void {
-    const targetHost = options.host ?? "";
-    const targetPort = options.port ?? 443;
+    const cb = callback ?? (() => undefined);
+    const targetHost = typeof options.host === "string" ? options.host : "";
+    const targetPort =
+      typeof options.port === "number"
+        ? options.port
+        : parseInt(String(options.port ?? 443), 10) || 443;
 
     const proxyIsHttps = this.proxyUrl.protocol === "https:";
     const proxyModule = proxyIsHttps ? https : http;
@@ -159,7 +163,7 @@ class ProxyTunnelAgent extends https.Agent {
     connectReq.on("connect", (res, socket) => {
       if (res.statusCode !== 200) {
         socket.destroy();
-        callback(
+        cb(
           new Error(
             `Proxy CONNECT to ${targetHost}:${targetPort} failed with status ${res.statusCode}`
           )
@@ -172,12 +176,12 @@ class ProxyTunnelAgent extends https.Agent {
           socket,
           servername: targetHost,
         },
-        () => callback(null, tlsSocket)
+        () => cb(null, tlsSocket)
       );
-      tlsSocket.on("error", (err) => callback(err));
+      tlsSocket.on("error", (err) => cb(err));
     });
 
-    connectReq.on("error", (err) => callback(err));
+    connectReq.on("error", (err) => cb(err));
     connectReq.end();
   }
 }
