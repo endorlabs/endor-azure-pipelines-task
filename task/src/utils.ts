@@ -2,6 +2,7 @@ import * as https from "https";
 import * as http from "http";
 import * as net from "net";
 import * as tls from "tls";
+import { Duplex } from "stream";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -123,9 +124,11 @@ class ProxyTunnelAgent extends https.Agent {
 
   createConnection(
     options: http.ClientRequestArgs,
-    callback?: (err: Error | null, socket?: net.Socket) => void
+    callback?: (err: Error | null, socket: Duplex) => void
   ): void {
-    const cb = callback ?? (() => undefined);
+    const cb = (err: Error | null, socket?: net.Socket) => {
+      callback?.(err, socket as unknown as Duplex);
+    };
     const targetHost = typeof options.host === "string" ? options.host : "";
     const targetPort =
       typeof options.port === "number"
