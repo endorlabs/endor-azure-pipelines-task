@@ -125,7 +125,7 @@ class ProxyTunnelAgent extends https.Agent {
   createConnection(
     options: http.ClientRequestArgs,
     callback?: (err: Error | null, socket: Duplex) => void
-  ): void {
+  ): Duplex | null | undefined {
     const cb = (err: Error | null, socket?: net.Socket) => {
       callback?.(err, socket as unknown as Duplex);
     };
@@ -186,6 +186,8 @@ class ProxyTunnelAgent extends https.Agent {
 
     connectReq.on("error", (err) => cb(err));
     connectReq.end();
+
+    return undefined;
   }
 }
 
